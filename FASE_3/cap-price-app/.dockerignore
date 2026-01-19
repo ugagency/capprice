@@ -1,0 +1,37 @@
+# --- Arquivos do Docker ---
+# Não copie os arquivos do Docker para dentro da imagem
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# --- Arquivos do Git ---
+# Não copie o histórico do Git (isso economiza muito espaço!)
+.git/
+.gitignore
+
+# --- Ambiente Python Local ---
+# Não copie seu ambiente virtual do Windows para a imagem
+venv/
+.venv/
+env/
+
+# --- Cache do Python ---
+# A imagem vai gerar o seu próprio cache
+__pycache__/
+*.pyc
+
+# --- Arquivos de IDE / Editor ---
+.vscode/
+
+# --- Sistema Operacional ---
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Logs ---
+*.log
+
+# --- Arquivo de Ambiente ---
+# O .env é injetado pelo docker-compose em runtime,
+# NUNCA deve ser copiado para a imagem em build-time.
+.env

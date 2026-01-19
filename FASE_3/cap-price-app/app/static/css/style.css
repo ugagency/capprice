@@ -1,0 +1,39 @@
+/* app/static/css/style.css */
+
+/* Define a fonte Inter como padrão */
+body {
+    font-family: 'Inter', sans-serif;
+}
+
+/* Oculta a scrollbar mas permite rolar */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* Estilos para inputs desabilitados */
+input:disabled, select:disabled {
+    background-color: #f3f4f6; /* bg-gray-100 */
+    color: #4b5563; /* text-gray-600 */
+    cursor: not-allowed;
+}
+
+/* Estilos para as Abas */
+.tab-button {
+    padding: 8px 16px;
+    border-bottom: 2px solid transparent;
+    font-weight: 500;
+    color: #6b7280; /* text-gray-500 */
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.tab-button.active {
+    color: #0d9488; /* text-teal-600 */
+    border-bottom-color: #0d9488; /* border-teal-600 */
+}
+.tab-button:hover:not(.active) {
+    background-color: #f3f4f6; /* bg-gray-100 */
+}

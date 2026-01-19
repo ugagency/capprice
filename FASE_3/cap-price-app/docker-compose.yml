@@ -1,0 +1,16 @@
+# docker-compose.yml
+version: '3.8'
+
+services:
+  # Serviço da Aplicação Flask/Gunicorn
+  capprice_app:
+    build: .
+    container_name: capprice_app
+    volumes:
+      - .:/app
+    ports:
+      - "5023:5000"
+    env_file:
+      - .env # Carrega variáveis de ambiente (ex: chaves de API)
+    extra_hosts:
+      - "host.docker.internal:host-gateway"

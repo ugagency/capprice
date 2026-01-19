@@ -12,6 +12,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . /app
 
-EXPOSE 5000
-
-CMD ["gunicorn", "-w", "2", "-b", "0.0.0.0:5000", "app:create_app()"]
+# Fixed for Render: Use $PORT if available, else 5000
+CMD ["sh", "-c", "gunicorn -w 2 -b 0.0.0.0:${PORT:-5000} 'app:create_app()'"]

@@ -1,0 +1,35 @@
+# --- Arquivos de Ambiente ---
+# NUNCA salve seus segredos no Git!
+# O .env é carregado pelo docker-compose, mas não deve ir para o repositório.
+.env
+
+# --- Artefatos do Python ---
+# Pasta de ambiente virtual
+venv/
+.venv/
+env/
+
+# Cache de bytecode e binários
+__pycache__/
+*.pyc
+
+# Pacotes e distribuição
+build/
+dist/
+*.egg-info/
+*.local
+
+# --- Arquivos de IDE / Editor ---
+# Configurações locais do VS Code
+.vscode/
+
+# --- Arquivos de Sistema Operacional ---
+# Windows
+Thumbs.db
+desktop.ini
+
+# macOS
+.DS_Store
+
+# --- Logs ---
+*.log
