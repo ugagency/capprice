@@ -33,7 +33,7 @@ def api_login():
     if not email or not password:
         return jsonify({"ok": False, "message": "Informe e-mail e senha."}), 400
 
-    ip = request.headers.get("X-Forwarded-For", request.remote_addr)
+    ip = (request.headers.get("X-Forwarded-For") or request.remote_addr or "").split(",")[0].strip()
     user_agent = request.headers.get("User-Agent")
 
     try:

@@ -127,7 +127,7 @@ def sso_start_capprice():
         return redirect(url_for("auth.home"))
 
     client_id = "capprice"
-    request_ip = request.headers.get("X-Forwarded-For", request.remote_addr)
+    request_ip = (request.headers.get("X-Forwarded-For") or request.remote_addr or "").split(",")[0].strip()
     user_agent = request.headers.get("User-Agent", "")
 
     code, state = create_sso_code(
