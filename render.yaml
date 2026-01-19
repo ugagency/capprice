@@ -1,0 +1,79 @@
+services:
+  # -----------------------------------------------------------
+  # 1) CapSaaS (Portal SSO)
+  # -----------------------------------------------------------
+  - type: web
+    name: saas-portal
+    runtime: docker
+    repo: https://github.com/ugagency/capprice
+    branch: main
+    rootDir: FASE_3/CapSaaS
+    plan: free
+    region: oregon
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: saas-db
+          property: connectionString
+      # Public URL will be filled by Render automatically, 
+      # but apps need to know it for redirects.
+      # You must add CAPSSYS_PUBLIC_URL manually in dashboard or use RENDER_EXTERNAL_URL
+      - key: CAPSSYS_PUBLIC_URL
+        sync: false  # Placeholder, user will edit in dashboard
+
+  # -----------------------------------------------------------
+  # 2) CapPrice (Precificador)
+  # -----------------------------------------------------------
+  - type: web
+    name: cap-price-app
+    runtime: docker
+    repo: https://github.com/ugagency/capprice
+    branch: main
+    rootDir: FASE_3/cap-price-app
+    plan: free
+    region: oregon
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: SECRET_KEY
+        generateValue: true
+      # Connects to the SAME database (different schema if needed, or same tables)
+      # Or you can create a second DB if you prefer isolation.
+      # For now, linking to the same DB to save free tier slots.
+      - key: DATABASE_URL
+        fromDatabase:
+          name: saas-db
+          property: connectionString
+      
+      # SSO Config (Internal URL to talk to Portal)
+      - key: CAPSSYS_INTERNAL_BASE_URL
+        fromService:
+          type: web
+          name: saas-portal
+          property: url
+      
+      # Public URL for browser redirects
+      # You need to copy the saas-portal public URL here manually in Dashboard
+      - key: CAPSSYS_PUBLIC_URL
+        sync: false 
+
+      - key: SSO_CLIENT_ID
+        value: capprice
+      - key: SSO_CLIENT_SECRET
+        value: CapPrice2026  # Make sure this matches what's in DB
+      - key: SSO_JWT_SECRET
+        value: sso_jwt_secret_change_me
+      - key: SSO_ISSUER
+        value: capssys.local  # Or the public URL
+
+databases:
+  - name: saas-db
+    databaseName: capssys_bd
+    user: capssys_app
+    plan: free
+    region: oregon
+    # PostgreSQL 16 is default on Render
