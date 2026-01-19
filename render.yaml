@@ -51,10 +51,7 @@ services:
       
       # SSO Config (Internal URL to talk to Portal)
       - key: CAPSSYS_INTERNAL_BASE_URL
-        fromService:
-          type: web
-          name: saas-portal
-          property: url
+        value: http://saas-portal:5000
       
       # Public URL for browser redirects
       # You need to copy the saas-portal public URL here manually in Dashboard
