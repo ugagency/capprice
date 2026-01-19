@@ -12,5 +12,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . /app
 
-# Fixed for Render: Use $PORT if available, else 5000
-CMD ["sh", "-c", "gunicorn -w 2 -b 0.0.0.0:${PORT:-5000} 'app:create_app()'"]
+# Fixed for Render: Auto-init DB then start Gunicorn
+CMD ["sh", "-c", "python init_db_render.py && gunicorn -w 2 -b 0.0.0.0:${PORT:-5000} 'app:create_app()'"]
