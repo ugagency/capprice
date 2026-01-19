@@ -1,0 +1,32 @@
+/* app/static/css/pages/admin.css */
+
+/* Card padrão (mesma vibe da tela de plataformas) */
+.admin-card {
+  border: 2px solid #f1f5f9;         /* slate-100 */
+  border-radius: 16px;
+  background: #ffffff;
+  transition: 0.25s ease;
+}
+
+/* Efeito hover "verde" como na tela de plataformas */
+.admin-card:hover {
+  background: #ecfdf5;               /* emerald-50 */
+  border-color: var(--brand);        /* verde da marca */
+  box-shadow: 0 18px 40px rgba(2, 6, 23, 0.10);
+}
+
+/* Título/descrição mudam de cor no hover (fica mais parecido com plataformas) */
+.admin-card .admin-card-title {
+  color: #0f172a;                    /* slate-900 */
+  transition: color 0.25s ease;
+}
+.admin-card .admin-card-desc {
+  color: #64748b;                    /* slate-500 */
+  transition: color 0.25s ease;
+}
+.admin-card:hover .admin-card-title {
+  color: var(--brand);
+}
+.admin-card:hover .admin-card-desc {
+  color: #475569;                    /* slate-600 */
+}

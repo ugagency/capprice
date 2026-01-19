@@ -1,0 +1,64 @@
+<!-- app/templates/pages/modals/admin_role_form_modal.html -->
+<div id="modalRoleForm"
+  class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4"
+  data-modal>
+  <div class="bg-white w-full max-w-xl rounded-2xl shadow-2xl border border-gray-100 overflow-hidden"
+    onclick="event.stopPropagation()">
+
+    <div class="flex items-center justify-between px-4 py-3 border-b bg-gray-50">
+      <div>
+        <h3 id="roleFormTitle" class="text-base font-extrabold text-gray-900 leading-tight">Novo nível</h3>
+        <p id="roleFormSubtitle" class="text-xs text-gray-500 leading-snug">Preencha os dados do nível.</p>
+      </div>
+      <button
+        class="w-9 h-9 rounded-lg border border-gray-200 hover:bg-gray-100 transition flex items-center justify-center text-lg leading-none"
+        data-modal-close="modalRoleForm"
+        type="button"
+        aria-label="Fechar">
+        ✕
+      </button>
+    </div>
+
+    <div class="p-4">
+      <form id="roleForm" class="space-y-2.5">
+        <input type="hidden" id="roleFormRoleId" value="" />
+
+        <div>
+          <label class="text-sm font-bold text-gray-700">Código</label>
+          <input id="roleFormCode"
+            class="mt-1 w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-200 text-sm"
+            placeholder="Ex: ADMIN, USER, FINANCEIRO" />
+        </div>
+
+        <div>
+          <label class="text-sm font-bold text-gray-700">Descrição</label>
+          <input id="roleFormDesc"
+            class="mt-1 w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-200 text-sm"
+            placeholder="Descrição do nível" />
+        </div>
+
+        <div class="flex items-center gap-2 pt-1">
+          <input id="roleFormActive" type="checkbox" class="w-4 h-4" checked />
+          <label for="roleFormActive" class="text-sm font-semibold text-gray-700">Nível ativo</label>
+        </div>
+
+        <div id="roleFormError"
+          class="hidden text-sm font-semibold text-red-700 bg-red-50 border border-red-100 rounded-xl p-3"></div>
+      </form>
+    </div>
+
+    <div class="px-4 py-3 border-t bg-gray-50 flex justify-end gap-2">
+      <button
+        class="px-4 py-2 rounded-lg border border-gray-200 hover:bg-gray-50 font-bold transition text-sm"
+        data-modal-close="modalRoleForm"
+        type="button">
+        Cancelar
+      </button>
+      <button id="btnSaveRole"
+        class="px-4 py-2 rounded-lg brand-bg text-white font-bold brand-hover transition text-sm"
+        type="button">
+        Salvar
+      </button>
+    </div>
+  </div>
+</div>

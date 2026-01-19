@@ -1,0 +1,253 @@
+<div class="modal fade" id="modalMestreEdit" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <div class="modal-content">
+
+      <div class="modal-header py-2">
+        <div class="d-flex flex-column">
+          <h6 class="modal-title fw-bold mb-0">Editar Pedido</h6>
+          <small class="text-muted">Você pode alterar dados e mover o pedido para qualquer fase.</small>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body pt-2">
+        <!-- Top actions -->
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
+          <div class="d-flex align-items-center gap-2">
+            <span class="badge text-bg-light border" id="mestrePedidoKey">Pedido: -</span>
+            <span class="badge text-bg-light border" id="mestrePedidoOv">OV: -</span>
+          </div>
+
+          <div class="d-flex align-items-center gap-2">
+            <label class="small text-muted fw-bold mb-0">Fase</label>
+            <select id="mestreStatus" class="form-select form-select-sm" style="min-width: 200px;">
+              <option value="comercial">Comercial</option>
+              <option value="programacao">Programação</option>
+              <option value="industrial">Industrial</option>
+              <option value="laboratorio">Laboratório</option>
+              <option value="faturamento">Faturamento</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Tabs -->
+        <ul class="nav nav-tabs small" id="mestreTabs" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tabComercial" type="button" role="tab">
+              Comercial
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tabProgramacao" type="button" role="tab">
+              Programação
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tabIndustrial" type="button" role="tab">
+              Industrial
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tabLaboratorio" type="button" role="tab">
+              Laboratório
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tabFaturamento" type="button" role="tab">
+              Faturamento
+            </button>
+          </li>
+        </ul>
+
+        <div class="tab-content pt-3">
+
+          <!-- Comercial -->
+          <div class="tab-pane fade show active" id="tabComercial" role="tabpanel">
+            <form id="formMestreComercial">
+              <input type="hidden" name="id" />
+              <div class="row g-2">
+                <div class="col-md-3">
+                  <label class="form-label small mb-1">Data</label>
+                  <input class="form-control form-control-sm" type="date" name="data">
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label small mb-1">OV/Remessa</label>
+                  <input class="form-control form-control-sm" name="ov_remessa">
+                </div>
+                <div class="col-md-2">
+                  <label class="form-label small mb-1">CIF/FOB</label>
+                  <select class="form-select form-select-sm" name="cif_fob"></select>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label small mb-1">Cliente</label>
+                  <input class="form-control form-control-sm" name="cliente">
+                </div>
+
+                <div class="col-md-4">
+                  <label class="form-label small mb-1">Produto</label>
+                  <select class="form-select form-select-sm" name="produto"></select>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label small mb-1">Local entrega</label>
+                  <input class="form-control form-control-sm" name="local_entrega">
+                </div>
+                <div class="col-md-2">
+                  <label class="form-label small mb-1">UF</label>
+                  <select class="form-select form-select-sm" name="uf_entrega"></select>
+                </div>
+                <div class="col-md-2">
+                  <label class="form-label small mb-1">Qtde</label>
+                  <input class="form-control form-control-sm" name="qtde_solicitada" type="number" step="0.1">
+                </div>
+
+                <div class="col-md-3">
+                  <label class="form-label small mb-1">Assessor</label>
+                  <select class="form-select form-select-sm" name="assessor"></select>
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label small mb-1">Assistente</label>
+                  <select class="form-select form-select-sm" name="assistente"></select>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <!-- Programação -->
+          <div class="tab-pane fade" id="tabProgramacao" role="tabpanel">
+            <form id="formMestreProgramacao">
+              <div class="row g-2">
+                <div class="col-md-4">
+                  <label class="form-label small mb-1">Refinaria/Fábrica</label>
+                  <select class="form-select form-select-sm" name="refinaria"></select>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label small mb-1">Nº Agendamento</label>
+                  <input class="form-control form-control-sm" name="agendamento_refinaria">
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label small mb-1">Hora agendamento</label>
+                  <input class="form-control form-control-sm" name="hora_agendamento" placeholder="HH:MM">
+                </div>
+
+                <div class="col-md-4">
+                  <label class="form-label small mb-1">Transportador</label>
+                  <select class="form-select form-select-sm" name="transportador"></select>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label small mb-1">Placa Cavalo</label>
+                  <input class="form-control form-control-sm" name="placa_cavalo">
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label small mb-1">Placa Carreta</label>
+                  <input class="form-control form-control-sm" name="placa_carreta">
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label small mb-1">Motorista</label>
+                  <input class="form-control form-control-sm" name="motorista">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label small mb-1">Solicitação Remessa</label>
+                  <input class="form-control form-control-sm" name="solicitacao_remessa">
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label small mb-1">Nova data OV venda</label>
+                  <input class="form-control form-control-sm" type="date" name="nova_data_ov_venda">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label small mb-1">Nº Pedido Remessa</label>
+                  <input class="form-control form-control-sm" name="pedido_remessa">
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <!-- Industrial -->
+          <div class="tab-pane fade" id="tabIndustrial" role="tabpanel">
+            <form id="formMestreIndustrial">
+              <div class="row g-2">
+                <div class="col-md-4">
+                  <label class="form-label small mb-1">Hora Chegada</label>
+                  <input class="form-control form-control-sm" name="hora_chegada" placeholder="HH:MM">
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label small mb-1">Hora Entrada</label>
+                  <input class="form-control form-control-sm" name="hora_entrada" placeholder="HH:MM">
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label small mb-1">Hora Saída</label>
+                  <input class="form-control form-control-sm" name="hora_saida" placeholder="HH:MM">
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <!-- Laboratório -->
+          <div class="tab-pane fade" id="tabLaboratorio" role="tabpanel">
+            <form id="formMestreLaboratorio">
+              <div class="row g-2">
+                <div class="col-md-4">
+                  <label class="form-label small mb-1">Confirmação Remessa</label>
+                  <select class="form-select form-select-sm" name="confirmacao_pedido_remessa"></select>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label small mb-1">Lacres</label>
+                  <input class="form-control form-control-sm" name="lacres" placeholder="LCR-001;LCR-002">
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label small mb-1">Lote</label>
+                  <input class="form-control form-control-sm" name="lote">
+                </div>
+
+                <div class="col-md-4">
+                  <label class="form-label small mb-1">Depósito</label>
+                  <input class="form-control form-control-sm" name="deposito">
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label small mb-1">Qtde carregada</label>
+                  <input class="form-control form-control-sm" name="qtde_carregada" type="number" step="0.1">
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label small mb-1">CA</label>
+                  <input class="form-control form-control-sm" name="ca">
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <!-- Faturamento -->
+          <div class="tab-pane fade" id="tabFaturamento" role="tabpanel">
+            <form id="formMestreFaturamento">
+              <div class="row g-2">
+                <div class="col-md-4">
+                  <label class="form-label small mb-1">Faturista</label>
+                  <select class="form-select form-select-sm" name="faturista"></select>
+                </div>
+                <div class="col-md-5">
+                  <label class="form-label small mb-1">Problema p/ faturar</label>
+                  <select class="form-select form-select-sm" name="problema_faturar"></select>
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label small mb-1">Número NF</label>
+                  <input class="form-control form-control-sm" name="numero_nf" placeholder="000123">
+                </div>
+              </div>
+            </form>
+
+            <div class="small text-muted mt-2">
+              Dica: para concluir, mova para “Faturamento” e informe NF.
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="modal-footer py-2">
+        <button class="btn btn-sm btn-light" data-bs-dismiss="modal">Fechar</button>
+        <button id="btnMestreSalvar" class="btn btn-sm btn-success">Salvar</button>
+      </div>
+
+    </div>
+  </div>
+</div>

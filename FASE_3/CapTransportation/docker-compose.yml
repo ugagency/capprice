@@ -1,0 +1,13 @@
+services:
+  captransportation_app:
+    build: .
+    container_name: captransportation_app
+    ports:
+      - "5024:5000"
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped

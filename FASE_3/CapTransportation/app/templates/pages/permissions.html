@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% set page = "permissions" %}
+
+{% block content %}
+<!-- KPIs -->
+<div class="row g-3 mb-3" id="kpiRowPermissoes"></div>
+
+<!-- Header + actions (padrão mestre) -->
+<div class="card master-card border-0 shadow-sm mb-3">
+  <div class="card-body py-3">
+    <div class="master-header">
+      <div class="master-headtext">
+        <div class="master-title">Permissões</div>
+        <p class="master-subtitle">RBAC por módulo (apenas Admin). Ajuste permissões por usuário.</p>
+      </div>
+
+      <div class="master-actions">
+        <input id="busca" class="form-control form-control-sm master-search"
+          placeholder="Buscar por e-mail/nome/id" />
+        <button id="btnRecarregar" class="btn btn-sm btn-outline-success master-btn">Recarregar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Table (padrão mestre) -->
+<div class="card master-card border-0 shadow-sm">
+  <div class="table-responsive">
+    <table class="table master-table align-middle mb-0">
+      <thead>
+        <tr>
+          <th>USUÁRIO</th>
+          <th style="width:200px;">NOME</th>
+          <th style="width:170px;">EXTERNAL</th>
+          <th style="width:220px;">RESUMO</th>
+          <th style="width:150px;"></th>
+        </tr>
+      </thead>
+      <tbody id="tbodyPermissoes"></tbody>
+    </table>
+  </div>
+</div>
+
+{% include "pages/modals/_modal_permissions.html" %}
+{% endblock %}

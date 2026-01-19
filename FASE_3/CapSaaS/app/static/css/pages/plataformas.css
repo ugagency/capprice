@@ -1,0 +1,5 @@
+/* app/static/css/pages/plataformas.css */
+.system-card:hover {
+  border-color: var(--brand);
+  background-color: #f0fdfa;
+}

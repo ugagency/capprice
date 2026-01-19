@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% set page = "index" %}
+
+{% block content %}
+<div class="d-flex flex-wrap gap-2 align-items-center justify-content-between mb-3">
+  <div>
+    <h4 class="mb-0 fw-bold">Fluxo Mestre</h4>
+    <div class="text-muted small">Pedidos por etapa (Comercial → Faturamento).</div>
+  </div>
+
+  <div class="d-flex gap-2">
+    <input id="busca" class="form-control form-control-sm" style="width: 280px;" placeholder="Buscar por cliente, produto ou OV" />
+    <button id="btnNovo" class="btn btn-sm btn-success">+ Novo Pedido</button>
+  </div>
+</div>
+
+<div id="cardsRow" class="row g-3 mb-4"></div>
+
+<div class="card border-0 shadow-sm">
+  <div class="card-header bg-white d-flex justify-content-between align-items-center">
+    <div class="fw-bold">Pedidos</div>
+    <div class="text-muted small">Lista (até 500 itens)</div>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead class="table-light">
+        <tr>
+          <th style="width: 120px;">Status</th>
+          <th>Cliente</th>
+          <th>Produto</th>
+          <th style="width: 140px;">OV</th>
+          <th style="width: 220px;">Fluxo</th>
+          <th style="width: 160px;"></th>
+        </tr>
+      </thead>
+      <tbody id="tbodyPedidos"></tbody>
+    </table>
+  </div>
+</div>
+
+<div class="modal fade" id="modalNovo" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Novo Pedido (Comercial)</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="formNovo" class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label">Data</label>
+            <input type="date" class="form-control" name="data" required />
+          </div>
+          <div class="col-md-8">
+            <label class="form-label">Cliente</label>
+            <input class="form-control" name="cliente" required />
+          </div>
+          <div class="col-md-8">
+            <label class="form-label">Produto</label>
+            <input class="form-control" name="produto" required />
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">OV</label>
+            <input class="form-control" name="ov" required />
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Transportador</label>
+            <input class="form-control" name="transportador" />
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Motorista</label>
+            <input class="form-control" name="motorista" />
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+        <button id="btnSalvarNovo" class="btn btn-success">Salvar</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,138 @@
+<!-- app/templates/pages/plataformas.html -->
+{% extends "base.html" %}
+{% set page = "plataformas" %}
+
+{% block title %}Escolha sua Plataforma{% endblock %}
+
+{% block content %}
+<div class="app-shell bg-slate-100 font-inter">
+  <div id="appContainer" class="app-card shadow-2xl bg-white">
+
+    <div id="plataformasScreen" class="h-full p-6 lg:p-8 bg-white">
+      <div class="h-full flex flex-col justify-between">
+        <div>
+          <div class="max-w-2xl mx-auto text-center mb-6">
+            <h2 class="text-2xl font-extrabold text-gray-900 mb-2">Escolha sua Plataforma</h2>
+            <p class="text-gray-500 text-sm">
+              Olá! Identificamos que você possui acesso a múltiplos módulos. Qual deseja abrir agora?
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-5xl mx-auto">
+            <button
+              data-route="/sso/start/capprice"
+              data-system="Cap Price"
+              data-ready="1"
+              class="system-card group p-6 border-2 border-gray-100 rounded-2xl text-left transition-all duration-300 hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-teal-100"
+            >
+              <div class="w-10 h-10 rounded-lg brand-bg flex items-center justify-center text-white mb-4 group-hover:scale-110 transition-transform">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                  stroke="currentColor" class="w-5 h-5">
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+                </svg>
+              </div>
+              <h3 class="text-lg font-bold text-gray-900 mb-1">Cap Price</h3>
+              <p class="text-gray-500 text-sm leading-relaxed">
+                Simulador inteligente de preços com laudos detalhados e análise comparativa.
+              </p>
+            </button>
+
+            <button
+              data-route="/bi"
+              data-system="Cap Tranportation"
+              data-ready="1"
+              class="system-card group p-6 border-2 border-gray-100 rounded-2xl text-left transition-all duration-300 hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-teal-100"
+            >
+              <div class="w-10 h-10 rounded-lg brand-bg flex items-center justify-center text-white mb-4 group-hover:scale-110 transition-transform">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                  stroke="currentColor" class="w-5 h-5">
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M10.5 6a7.5 7.5 0 1 0 7.5 7.5h-7.5V6Z" />
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M13.5 10.5H21A7.5 7.5 0 0 0 13.5 3v7.5Z" />
+                </svg>
+              </div>
+              <h3 class="text-lg font-bold text-gray-900 mb-1">Cap Tranportation</h3>
+              <p class="text-gray-500 text-sm leading-relaxed">
+                Controle e gerenciamento de pedidos.
+              </p>
+            </button>
+
+            <button
+              data-route="/admin"
+              data-system="Administração"
+              data-ready="1"
+              class="system-card group p-6 border-2 border-gray-100 rounded-2xl text-left transition-all duration-300 hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-teal-100"
+            >
+              <div class="w-10 h-10 rounded-lg brand-bg flex items-center justify-center text-white mb-4 group-hover:scale-110 transition-transform">
+                <!-- ÍCONE ATUALIZADO: "usuário" (mantém padrão de cor via brand-bg) -->
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                  stroke="currentColor" class="w-5 h-5">
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M15.75 6a3.75 3.75 0 1 1-7.5 0a3.75 3.75 0 0 1 7.5 0Z" />
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M4.5 20.25a7.5 7.5 0 0 1 15 0" />
+                </svg>
+              </div>
+              <h3 class="text-lg font-bold text-gray-900 mb-1">Administração</h3>
+              <p class="text-gray-500 text-sm leading-relaxed">
+                Usuários, níveis de acesso, permissões e reset de senha.
+              </p>
+            </button>
+          </div>
+        </div>
+
+        <div class="mt-6 text-center">
+          <button
+            id="btnLogout"
+            type="button"
+            class="inline-flex items-center gap-2 text-gray-500 hover:text-gray-800 font-medium transition group text-sm"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+              stroke="currentColor" class="w-4 h-4 group-hover:-translate-x-1 transition-transform">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+            </svg>
+            Sair e voltar ao login
+          </button>
+        </div>
+      </div>
+    </div>
+
+    {% include "pages/modals/login_modal.html" %}
+
+    <!-- ===============================
+         MODAL: Conectando / Em construção
+         (padrão do exemplo)
+    =============================== -->
+    <div id="modalConnect"
+      class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+      <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl border border-gray-100 overflow-hidden"
+        onclick="event.stopPropagation()">
+
+        <div class="p-6 text-center">
+          <div class="w-12 h-12 mx-auto rounded-full brand-bg flex items-center justify-center text-white mb-4">
+            <!-- ÍCONE DO ANEXO (copiado exatamente do seu inspetor) -->
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244"></path>
+            </svg>
+          </div>
+
+          <h3 id="connectTitle" class="text-lg font-extrabold text-gray-900">Conectando...</h3>
+          <p id="connectMessage" class="text-sm text-gray-500 mt-2 leading-relaxed">
+            Iniciando sessão segura no módulo selecionado. Este módulo está em construção e será liberado em breve.
+          </p>
+
+          <button id="btnCloseConnect"
+            class="mt-5 w-full brand-bg text-white py-3 rounded-xl font-bold brand-hover transition duration-300">
+            Fechar
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/pages/plataformas.js') }}"></script>
+{% endblock %}

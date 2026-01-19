@@ -1,0 +1,7 @@
+/* app/static/css/style.css */
+@import "./base.css";
+
+/* Pages */
+@import "./pages/login.css";
+@import "./pages/plataformas.css";
+@import "./pages/admin.css";

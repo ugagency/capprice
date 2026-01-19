@@ -1,0 +1,108 @@
+<!-- app/templates/pages/login.html -->
+{% extends "base.html" %}
+{% set page = "login" %}
+
+{% block title %}Acesso ao Sistema SaaS{% endblock %}
+
+{% block content %}
+<div class="app-shell bg-slate-100 font-inter">
+  <div id="appContainer" class="app-card shadow-2xl bg-white">
+
+    <div id="loginScreen" class="h-full flex flex-col md:flex-row overflow-hidden bg-white">
+      <!-- ===============================
+           Painel Esquerdo (branding)
+           =============================== -->
+      <div class="md:w-1/2 brand-bg text-white p-6 lg:p-8 flex flex-col justify-center items-center text-center">
+        <div class="bg-white/10 p-3 rounded-full mb-4">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+            stroke="currentColor" class="w-9 h-9">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+          </svg>
+        </div>
+
+        <h1 class="text-2xl font-extrabold mb-3 tracking-tight">Portal CAP</h1>
+
+        <p class="text-teal-50/80 leading-relaxed text-sm max-w-xs">
+          Bem-vindo de volta. Acesse seu ecossistema de ferramentas integradas.
+        </p>
+
+        <div class="mt-6 pt-6 border-t border-white/20 w-full text-[11px] text-teal-100/50">
+          &copy; 2025 CAP TECH
+        </div>
+      </div>
+
+      <!-- ===============================
+           Painel Direito (formulário)
+           =============================== -->
+      <div class="md:w-1/2 p-6 lg:p-8 bg-white">
+        <div class="h-full flex flex-col justify-center">
+          <div class="mb-6 text-center md:text-left">
+            <h2 class="text-xl font-bold text-gray-900">Login</h2>
+            <p class="text-gray-500 text-sm mt-1">Insira suas credenciais para continuar</p>
+          </div>
+
+          <!-- Form de login: submit via fetch para /api/login -->
+          <form id="loginForm" class="space-y-4">
+            <div>
+              <label for="email" class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2 login-badge">
+                E-mail ou Usuário
+              </label>
+              <input
+                type="email"
+                id="email"
+                placeholder="exemplo@email.com"
+                class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 brand-ring transition-all"
+                required
+              />
+            </div>
+
+            <div>
+              <label for="password" class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2 login-badge">
+                Senha
+              </label>
+              <input
+                type="password"
+                id="password"
+                placeholder="••••••••"
+                class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 brand-ring transition-all"
+                required
+              />
+            </div>
+
+            <!-- Área de erro (controlada via JS) -->
+            <div id="errorMessage" class="flex items-center gap-2 text-red-600 text-sm hidden animate-pulse">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
+                <path fill-rule="evenodd"
+                  d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-8-5a.75.75 0 0 1 .75.75v4.5a.75.75 0 0 1-1.5 0v-4.5A.75.75 0 0 1 10 5Zm0 10a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z"
+                  clip-rule="evenodd" />
+              </svg>
+              <span id="errorText">Acesso negado. Verifique os dados.</span>
+            </div>
+
+            <button
+              type="submit"
+              class="w-full brand-bg text-white py-3 rounded-xl font-bold brand-hover transition duration-300 shadow-lg shadow-teal-900/20 active:scale-[0.98]"
+            >
+              Entrar no Sistema
+            </button>
+          </form>
+
+          <!-- “Esqueceu sua senha?” abre o modal -->
+          <div class="mt-5 text-center">
+            <button id="btnForgot" type="button" class="text-sm font-medium brand-text hover:text-teal-800 transition">
+              Esqueceu sua senha?
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal (suporte / mensagens) -->
+    {% include "pages/modals/login_modal.html" %}
+  </div>
+</div>
+
+<!-- Script da página de login -->
+<script src="{{ url_for('static', filename='js/pages/login.js') }}"></script>
+{% endblock %}

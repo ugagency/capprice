@@ -1,0 +1,26 @@
+<!-- app/templates/base.html -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Portal SaaS{% endblock %}</title>
+
+    <!-- Tailwind via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- CSS único do projeto -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+
+    {% block extra_head %}{% endblock %}
+  </head>
+
+  <body class="min-h-screen" data-page="{{ page|default('') }}">
+    {% block content %}{% endblock %}
+
+    <!-- JS único do projeto -->
+    <script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+    {% block extra_js %}{% endblock %}
+  </body>
+</html>

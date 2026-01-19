@@ -1,0 +1,61 @@
+<!-- app/templates/pages/modals/admin_reset_modal.html -->
+<div id="modalReset"
+  class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4"
+  data-modal>
+  <div class="bg-white w-full max-w-xl rounded-2xl shadow-2xl border border-gray-100 overflow-hidden"
+    onclick="event.stopPropagation()">
+
+    <!-- HEADER (compacto) -->
+    <div class="flex items-center justify-between px-4 py-3 border-b bg-gray-50">
+      <div>
+        <h3 class="text-base font-extrabold text-gray-900 leading-tight">Reset de senha</h3>
+        <p class="text-xs text-gray-500 leading-snug">Gere senha temporária e force troca no login.</p>
+      </div>
+      <button
+        class="w-9 h-9 rounded-lg border border-gray-200 hover:bg-gray-100 transition flex items-center justify-center text-lg leading-none"
+        data-modal-close="modalReset"
+        type="button"
+        aria-label="Fechar">
+        ✕
+      </button>
+    </div>
+
+    <!-- BODY (compacto) -->
+    <div class="p-4 space-y-2.5">
+      <select id="resetUserSelect"
+        class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-200 text-sm"></select>
+
+      <button id="btnDoReset"
+        class="w-full brand-bg text-white py-2 rounded-lg font-bold brand-hover transition duration-300 text-sm"
+        type="button">
+        Gerar senha temporária
+      </button>
+
+      <!-- INFO (centralizado e compacto) -->
+      <div class="bg-amber-50 border border-amber-100 rounded-xl px-3 py-2 text-amber-800 text-sm font-semibold text-center">
+        O usuário <strong>deverá trocar a senha no próximo login</strong>.
+      </div>
+
+      <!-- RESULTADO (compacto) -->
+      <div id="resetResult" class="hidden">
+        <div class="font-extrabold text-gray-900 mb-2 text-sm">Senha temporária gerada:</div>
+        <div class="border border-gray-100 rounded-xl px-3 py-2 bg-gray-50">
+          <code id="resetTempPass" class="text-sm font-extrabold text-gray-900"></code>
+        </div>
+      </div>
+
+      <div id="resetError"
+        class="hidden text-sm font-semibold text-red-700 bg-red-50 border border-red-100 rounded-xl p-3"></div>
+    </div>
+
+    <!-- FOOTER (compacto) -->
+    <div class="px-4 py-3 border-t bg-gray-50 flex justify-end">
+      <button
+        class="px-4 py-2 rounded-lg brand-bg text-white font-bold brand-hover transition text-sm"
+        data-modal-close="modalReset"
+        type="button">
+        Fechar
+      </button>
+    </div>
+  </div>
+</div>

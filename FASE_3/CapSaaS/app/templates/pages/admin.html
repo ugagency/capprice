@@ -1,0 +1,160 @@
+<!-- app/templates/pages/admin.html -->
+{% extends "base.html" %}
+{% set page = "admin" %}
+
+{% block title %}Administração{% endblock %}
+
+{% block content %}
+<div class="app-shell bg-slate-100 font-inter">
+  <div id="appContainer" class="app-card shadow-2xl bg-white">
+
+    <div class="h-full p-6 lg:p-8 bg-white">
+      <div class="h-full flex flex-col justify-between">
+
+        <!-- Header -->
+        <div>
+          <div class="max-w-2xl mx-auto text-center mb-6">
+            <h2 class="text-2xl font-extrabold text-gray-900 mb-2">Administração</h2>
+            <p class="text-gray-500 text-sm">
+              Cadastro de usuários, níveis de acesso, permissões e redefinição de senhas.
+            </p>
+          </div>
+
+          <!-- Grid de cards -->
+          <div class="max-w-5xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+              <!-- Usuários -->
+              <button type="button"
+                class="admin-card group p-5 text-left flex items-center gap-4 focus:outline-none focus:ring-4 focus:ring-teal-100"
+                data-admin-open="modalUsers">
+                <div class="w-11 h-11 rounded-xl brand-bg flex items-center justify-center text-white group-hover:scale-110 transition-transform">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
+                    viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M15.75 6a3.75 3.75 0 1 1-7.5 0a3.75 3.75 0 0 1 7.5 0Z" />
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M4.5 20.25a7.5 7.5 0 0 1 15 0" />
+                  </svg>
+                </div>
+
+                <div class="min-w-0">
+                  <div class="admin-card-title text-lg font-bold leading-tight">Usuários</div>
+                  <div class="admin-card-desc text-sm mt-1 leading-relaxed">
+                    Criar, editar, ativar/inativar e reset de senha.
+                  </div>
+                </div>
+              </button>
+
+              <!-- Níveis -->
+              <button type="button"
+                class="admin-card group p-5 text-left flex items-center gap-4 focus:outline-none focus:ring-4 focus:ring-teal-100"
+                data-admin-open="modalRoles">
+                <div class="w-11 h-11 rounded-xl brand-bg flex items-center justify-center text-white group-hover:scale-110 transition-transform">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
+                    viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M12 3.75l9 5.25-9 5.25-9-5.25 9-5.25Z" />
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M3 15l9 5.25L21 15" />
+                  </svg>
+                </div>
+
+                <div class="min-w-0">
+                  <div class="admin-card-title text-lg font-bold leading-tight">Níveis de acesso</div>
+                  <div class="admin-card-desc text-sm mt-1 leading-relaxed">
+                    Criar níveis e vincular permissões.
+                  </div>
+                </div>
+              </button>
+
+              <!-- Permissões -->
+              <button type="button"
+                class="admin-card group p-5 text-left flex items-center gap-4 focus:outline-none focus:ring-4 focus:ring-teal-100"
+                data-admin-open="modalPerms">
+                <div class="w-11 h-11 rounded-xl brand-bg flex items-center justify-center text-white group-hover:scale-110 transition-transform">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
+                    viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M15.75 6a3.75 3.75 0 1 1-7.5 0a3.75 3.75 0 0 1 7.5 0Z" />
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M4.5 20.25a7.5 7.5 0 0 1 10.2-6.93" />
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M16.5 14.25v-.75a2.25 2.25 0 0 1 4.5 0v.75" />
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M15.75 14.25h6v4.5a1.5 1.5 0 0 1-1.5 1.5h-3a1.5 1.5 0 0 1-1.5-1.5v-4.5Z" />
+                  </svg>
+                </div>
+
+                <div class="min-w-0">
+                  <div class="admin-card-title text-lg font-bold leading-tight">Permissões</div>
+                  <div class="admin-card-desc text-sm mt-1 leading-relaxed">
+                    Controlar ações por módulo e por nível.
+                  </div>
+                </div>
+              </button>
+
+              <!-- Reset -->
+              <button type="button"
+                class="admin-card group p-5 text-left flex items-center gap-4 focus:outline-none focus:ring-4 focus:ring-teal-100"
+                data-admin-open="modalReset">
+                <div class="w-11 h-11 rounded-xl brand-bg flex items-center justify-center text-white group-hover:scale-110 transition-transform">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
+                    viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M16.5 10.5V8.25a4.5 4.5 0 0 0-9 0" />
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M7.5 10.5h11.25a1.5 1.5 0 0 1 1.5 1.5v6.75a1.5 1.5 0 0 1-1.5 1.5H7.5A1.5 1.5 0 0 1 6 18.75V12a1.5 1.5 0 0 1 1.5-1.5Z" />
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M12 15.75v1.5" />
+                  </svg>
+                </div>
+
+                <div class="min-w-0">
+                  <div class="admin-card-title text-lg font-bold leading-tight">Reset de senha</div>
+                  <div class="admin-card-desc text-sm mt-1 leading-relaxed">
+                    Gerar senha temporária e forçar troca no login.
+                  </div>
+                </div>
+              </button>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="mt-6 text-center">
+          <button
+            id="btnBackToPlatforms"
+            type="button"
+            class="inline-flex items-center gap-2 text-gray-500 hover:text-gray-800 font-medium transition group text-sm"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+              stroke="currentColor" class="w-4 h-4 group-hover:-translate-x-1 transition-transform">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+            </svg>
+            Sair e voltar para opções de plataformas
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Modais separados -->
+    {% include "pages/modals/admin_users_modal.html" %}
+    {% include "pages/modals/admin_roles_modal.html" %}
+    {% include "pages/modals/admin_perms_modal.html" %}
+    {% include "pages/modals/admin_reset_modal.html" %}
+    {% include "pages/modals/admin_user_form_modal.html" %}
+    {% include "pages/modals/admin_temp_pass_modal.html" %}
+
+    <!-- ADICIONADOS (Níveis) -->
+    {% include "pages/modals/admin_role_form_modal.html" %}
+    {% include "pages/modals/admin_role_perms_modal.html" %}
+
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/pages/admin_modals.js') }}"></script>
+<script src="{{ url_for('static', filename='js/pages/admin.js') }}"></script>
+{% endblock %}

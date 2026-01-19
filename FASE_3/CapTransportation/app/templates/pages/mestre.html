@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% set page = "mestre" %}
+
+{% block content %}
+<!-- KPIs -->
+<div class="row g-3 mb-3" id="kpiRow"></div>
+
+<!-- Header + actions -->
+<div class="card master-card border-0 shadow-sm mb-3">
+  <div class="card-body py-3">
+    <div class="master-header">
+      <div class="master-headtext">
+        <div class="master-title">Fluxo Mestre de Pedidos</div>
+        <p class="master-subtitle">Visão consolidada por etapa e saúde do fluxo.</p>
+      </div>
+
+      <div class="master-actions">
+        <input id="busca" class="form-control form-control-sm master-search" placeholder="Buscar por CHAVE/OV/Cliente/Produto" />
+        <button id="btnExportar" class="btn btn-sm btn-outline-success master-btn">Exportar</button>
+        <button id="btnNovo" class="btn btn-sm btn-success master-btn">+ Novo</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Table -->
+<div class="card master-card border-0 shadow-sm">
+  <div class="table-responsive">
+    <table class="table master-table align-middle mb-0">
+      <thead>
+        <tr>
+          <th style="width: 132px;">STATUS</th>
+          <th>CLIENTE</th>
+          <th style="width: 200px;">PRODUTO</th>
+          <th style="width: 130px;">OV SAP</th>
+          <th style="width: 200px;">SAÚDE DO FLUXO</th>
+          <th style="width: 96px;"></th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Modal correto do Mestre -->
+{% include "pages/modals/_modal_mestre_editar.html" %}
+{% endblock %}

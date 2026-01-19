@@ -1,0 +1,82 @@
+<!-- app/templates/pages/modals/admin_users_modal.html -->
+<div id="modalUsers"
+  class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4"
+  data-modal>
+
+  <div class="bg-white w-full max-w-5xl rounded-2xl shadow-2xl border border-gray-100 overflow-hidden">
+
+    <!-- HEADER (compacto) -->
+    <div class="flex items-center justify-between px-4 py-3 border-b bg-gray-50">
+      <div>
+        <h3 class="text-base font-extrabold text-gray-900 leading-tight">Usuários</h3>
+        <p class="text-xs text-gray-500 leading-snug">Gerencie usuários, acesso e segurança.</p>
+      </div>
+
+      <!-- botão X menor -->
+      <button
+        class="w-9 h-9 rounded-lg border border-gray-200 hover:bg-gray-100 transition flex items-center justify-center text-lg leading-none"
+        data-modal-close="modalUsers"
+        type="button"
+        aria-label="Fechar">
+        ✕
+      </button>
+    </div>
+
+    <!-- BODY (compacto) -->
+    <div class="p-4">
+      <!-- linha superior -->
+      <div class="admin-toolbar-compact flex flex-col md:flex-row gap-2 md:items-center md:justify-between mb-3">
+        <input id="adminUsersSearch"
+          class="admin-input-compact w-full md:max-w-md px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-200 text-sm"
+          placeholder="Buscar por nome / e-mail..." />
+
+        <div class="flex gap-2 justify-end">
+          <button id="btnOpenCreateUser"
+            class="admin-btn-compact px-3 py-2 rounded-lg brand-bg text-white font-bold brand-hover transition text-sm"
+            type="button">
+            Novo usuário
+          </button>
+
+          <button id="btnReloadUsers"
+            class="admin-btn-compact px-3 py-2 rounded-lg border border-gray-200 hover:bg-gray-50 font-bold transition text-sm"
+            type="button">
+            Atualizar
+          </button>
+        </div>
+      </div>
+
+      <!-- tabela (compacta) -->
+      <div class="overflow-auto border border-gray-100 rounded-xl">
+        <table class="admin-table-compact w-full text-left border-collapse">
+          <thead class="bg-gray-50 text-gray-600 text-[11px] uppercase font-semibold">
+            <tr>
+              <th class="px-3 py-2">Nome</th>
+              <th class="px-3 py-2">E-mail</th>
+              <th class="px-3 py-2">Status</th>
+              <th class="px-3 py-2">Trocar senha</th>
+              <th class="px-3 py-2 text-right">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="adminUsersTbody" class="divide-y divide-gray-100 text-sm"></tbody>
+        </table>
+      </div>
+
+      <div id="adminUsersEmpty" class="text-center text-gray-500 font-semibold py-3 hidden text-sm">
+        Nenhum usuário encontrado.
+      </div>
+
+      <div id="adminUsersError"
+        class="hidden mt-3 text-sm font-semibold text-red-700 bg-red-50 border border-red-100 rounded-xl p-3"></div>
+    </div>
+
+    <!-- FOOTER (compacto) -->
+    <div class="px-4 py-3 border-t bg-gray-50 flex justify-end">
+      <button
+        class="admin-btn-compact px-4 py-2 rounded-lg brand-bg text-white font-bold brand-hover transition text-sm"
+        data-modal-close="modalUsers"
+        type="button">
+        Fechar
+      </button>
+    </div>
+  </div>
+</div>

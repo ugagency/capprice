@@ -1,0 +1,41 @@
+version: "3.8"
+
+services:
+  web:
+    build: .
+    container_name: saas-portal-web
+    ports:
+      - "5018:5000"
+    env_file:
+      - .env
+    environment:
+      - FLASK_ENV=production
+      - FLASK_DEBUG=1
+      - DATABASE_URL=postgresql://capssys_app:SsySSaaSCAP2025proX@db:5432/capssys_bd
+    volumes:
+      - .:/app
+    restart: unless-stopped
+    depends_on:
+      - db
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  db:
+    image: postgres:15-alpine
+    container_name: saas-portal-db
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRES_USER=postgres
+
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=capssys_bd
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./db_init:/docker-entrypoint-initdb.d
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+
+

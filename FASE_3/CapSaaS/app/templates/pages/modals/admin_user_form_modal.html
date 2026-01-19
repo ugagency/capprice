@@ -1,0 +1,80 @@
+<!-- app/templates/pages/modals/admin_user_form_modal.html -->
+<div id="modalUserForm"
+  class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4"
+  data-modal>
+  <div class="bg-white w-full max-w-xl rounded-2xl shadow-2xl border border-gray-100 overflow-hidden">
+
+    <!-- HEADER (compacto) -->
+    <div class="flex items-center justify-between px-4 py-3 border-b bg-gray-50">
+      <div>
+        <h3 id="userFormTitle" class="text-base font-extrabold text-gray-900 leading-tight">Novo usuário</h3>
+        <p id="userFormSubtitle" class="text-xs text-gray-500 leading-snug">Preencha os dados do usuário.</p>
+      </div>
+      <button
+        class="w-9 h-9 rounded-lg border border-gray-200 hover:bg-gray-100 transition flex items-center justify-center text-lg leading-none"
+        data-modal-close="modalUserForm"
+        type="button"
+        aria-label="Fechar">
+        ✕
+      </button>
+    </div>
+
+    <!-- BODY (compacto) -->
+    <div class="p-4">
+      <form id="userForm" class="space-y-2.5">
+        <input type="hidden" id="userFormUserId" value="" />
+
+        <div>
+          <label class="text-sm font-bold text-gray-700">Nome</label>
+          <input id="userFormNome"
+            class="mt-1 w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-200 text-sm"
+            placeholder="Nome completo" />
+        </div>
+
+        <div>
+          <label class="text-sm font-bold text-gray-700">E-mail</label>
+          <input id="userFormEmail" type="email"
+            class="mt-1 w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-200 text-sm"
+            placeholder="email@dominio.com" />
+        </div>
+
+        <div>
+          <label class="text-sm font-bold text-gray-700">Nível (Role)</label>
+          <select id="userFormRole"
+            class="mt-1 w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-200 text-sm"></select>
+        </div>
+
+        <div class="flex items-center gap-2 pt-1">
+          <input id="userFormActive" type="checkbox" class="w-4 h-4" checked />
+          <label for="userFormActive" class="text-sm font-semibold text-gray-700">Usuário ativo</label>
+        </div>
+
+        <div id="userFormTempWrap"
+          class="hidden bg-amber-50 border border-amber-100 rounded-xl p-3 text-amber-800 text-sm font-semibold">
+          <div class="font-extrabold text-gray-900 mb-2">Senha temporária gerada:</div>
+          <div class="border border-gray-100 rounded-xl p-3 bg-gray-50">
+            <code id="userFormTempPass"></code>
+          </div>
+        </div>
+
+        <div id="userFormError"
+          class="hidden text-sm font-semibold text-red-700 bg-red-50 border border-red-100 rounded-xl p-3"></div>
+      </form>
+    </div>
+
+    <!-- FOOTER (compacto) -->
+    <div class="px-4 py-3 border-t bg-gray-50 flex justify-end gap-2">
+      <button
+        class="px-4 py-2 rounded-lg border border-gray-200 hover:bg-gray-50 font-bold transition text-sm"
+        data-modal-close="modalUserForm"
+        type="button">
+        Cancelar
+      </button>
+      <button id="btnSaveUser"
+        class="px-4 py-2 rounded-lg brand-bg text-white font-bold brand-hover transition text-sm"
+        type="button">
+        Salvar
+      </button>
+    </div>
+  </div>
+</div>

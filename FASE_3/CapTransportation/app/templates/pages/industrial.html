@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% set page = "industrial" %}
+
+{% block content %}
+<!-- KPIs -->
+<div class="row g-3 mb-3" id="kpiRowIndustrial"></div>
+
+<!-- Header + actions (padrão mestre) -->
+<div class="card master-card border-0 shadow-sm mb-3">
+  <div class="card-body py-3">
+    <div class="master-header">
+      <div class="master-headtext">
+        <div class="master-title">Industrial</div>
+        <p class="master-subtitle">Controle de chegada/entrada/saída do carregamento.</p>
+      </div>
+
+      <div class="master-actions">
+        <input id="busca" class="form-control form-control-sm master-search"
+          placeholder="Buscar por CHAVE/OV/Transportador/Motorista" />
+        <button id="btnExportar" class="btn btn-sm btn-outline-success master-btn">Exportar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Table (padrão mestre) -->
+<div class="card master-card border-0 shadow-sm">
+  <div class="table-responsive">
+    <table class="table master-table align-middle mb-0 industrial-table">
+      <thead>
+        <tr>
+          <th style="width:132px;">STATUS</th>
+          <th style="width:170px;">OV/REMESSA</th>
+          <th style="width:190px;">TRANSPORTADOR</th>
+          <th style="width:190px;">MOTORISTA</th>
+          <th style="width:120px;">CHEGADA</th>
+          <th style="width:120px;">ENTRADA</th>
+          <th style="width:120px;">SAÍDA</th>
+          <th style="width:200px;"></th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+{% include "pages/modals/_modal_industrial.html" %}
+{% endblock %}

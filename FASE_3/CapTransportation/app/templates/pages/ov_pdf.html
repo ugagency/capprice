@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Relatório de OV - {{ p.chave }}</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 1cm;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            color: #333;
+            line-height: 1.4;
+            font-size: 10pt;
+        }
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #006666;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+        }
+        .header h1 {
+            color: #006666;
+            margin: 0;
+            font-size: 18pt;
+        }
+        .header p {
+            margin: 5px 0;
+            color: #666;
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+        .section-title {
+            background-color: #f4f4f4;
+            padding: 5px 10px;
+            font-weight: bold;
+            color: #006666;
+            border-left: 4px solid #006666;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            font-size: 11pt;
+        }
+        .grid {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .grid td {
+            padding: 4px 8px;
+            vertical-align: top;
+            border-bottom: 1px solid #eee;
+        }
+        .label {
+            font-weight: bold;
+            color: #555;
+            width: 30%;
+        }
+        .value {
+            color: #000;
+        }
+        .footer {
+            margin-top: 30px;
+            text-align: right;
+            font-size: 8pt;
+            color: #999;
+            border-top: 1px solid #ddd;
+            padding-top: 5px;
+        }
+        .status-pill {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 9pt;
+            font-weight: bold;
+            color: white;
+            background-color: #006666;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Ordem de Venda (OV)</h1>
+        <p><strong>{{ p.chave }}</strong> | OV SAP: {{ p.ov_remessa or '-' }}</p>
+        <p>Data de Emissão: {{ p.created_at.strftime('%d/%m/%Y %H:%M') if p.created_at else '-' }}</p>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Informações Gerais</div>
+        <table class="grid">
+            <tr>
+                <td class="label">Status Atual:</td>
+                <td class="value"><span class="status-pill">{{ p.status|upper }}</span></td>
+                <td class="label">Data OV:</td>
+                <td class="value">{{ p.data.strftime('%d/%m/%Y') if p.data else '-' }}</td>
+            </tr>
+            <tr>
+                <td class="label">Cliente:</td>
+                <td class="value" colspan="3">{{ p.cliente or '-' }}</td>
+            </tr>
+            <tr>
+                <td class="label">Produto:</td>
+                <td class="value">{{ p.produto or '-' }}</td>
+                <td class="label">Qtd Solicitada:</td>
+                <td class="value">{{ p.qtde_solicitada or '0' }} t</td>
+            </tr>
+            <tr>
+                <td class="label">Local de Entrega:</td>
+                <td class="value">{{ p.local_entrega or '-' }} ({{ p.uf_entrega or '-' }})</td>
+                <td class="label">CIF/FOB:</td>
+                <td class="value">{{ p.cif_fob or '-' }}</td>
+            </tr>
+            <tr>
+                <td class="label">Assessor:</td>
+                <td class="value">{{ p.assessor or '-' }}</td>
+                <td class="label">Assistente:</td>
+                <td class="value">{{ p.assistente or '-' }}</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Programação e Logística</div>
+        <table class="grid">
+            <tr>
+                <td class="label">Refinaria:</td>
+                <td class="value">{{ p.refinaria or '-' }}</td>
+                <td class="label">Agendamento Ref:</td>
+                <td class="value">{{ p.agendamento_refinaria or '-' }}</td>
+            </tr>
+            <tr>
+                <td class="label">Hora Agendamento:</td>
+                <td class="value">{{ p.hora_agendamento or '-' }}</td>
+                <td class="label">Transportador:</td>
+                <td class="value">{{ p.transportador or '-' }}</td>
+            </tr>
+            <tr>
+                <td class="label">Motorista:</td>
+                <td class="value">{{ p.motorista or '-' }}</td>
+                <td class="label">Placas (Cav/Car):</td>
+                <td class="value">{{ p.placa_cavalo or '-' }} / {{ p.placa_carreta or '-' }}</td>
+            </tr>
+            <tr>
+                <td class="label">Sol. Remessa:</td>
+                <td class="value">{{ p.solicitacao_remessa or '-' }}</td>
+                <td class="label">Pedido Remessa:</td>
+                <td class="value">{{ p.pedido_remessa or '-' }}</td>
+            </tr>
+             <tr>
+                <td class="label">Nova Data OV:</td>
+                <td class="value">{{ p.nova_data_ov_venda.strftime('%d/%m/%Y') if p.nova_data_ov_venda else '-' }}</td>
+                <td class="label"></td>
+                <td class="value"></td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Industrial / Carregamento</div>
+        <table class="grid">
+            <tr>
+                <td class="label">Chegada:</td>
+                <td class="value">{{ p.hora_chegada or '-' }}</td>
+                <td class="label">Entrada:</td>
+                <td class="value">{{ p.hora_entrada or '-' }}</td>
+            </tr>
+            <tr>
+                <td class="label">Saída:</td>
+                <td class="value">{{ p.hora_saida or '-' }}</td>
+                <td class="label">Qtd Carregada:</td>
+                <td class="value">{{ p.qtde_carregada or '0' }} t</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Laboratório</div>
+        <table class="grid">
+            <tr>
+                <td class="label">Confirmação:</td>
+                <td class="value">{{ p.confirmacao_pedido_remessa or '-' }}</td>
+                <td class="label">Lote / Depósito:</td>
+                <td class="value">{{ p.lote or '-' }} / {{ p.deposito or '-' }}</td>
+            </tr>
+            <tr>
+                <td class="label">Lacres:</td>
+                <td class="value">{{ p.lacres or '-' }}</td>
+                <td class="label">CA:</td>
+                <td class="value">{{ p.ca or '-' }}</td>
+            </tr>
+            <tr>
+                <td class="label">Data Liberação:</td>
+                <td class="value">{{ p.data_liberacao.strftime('%d/%m/%Y') if p.data_liberacao else '-' }}</td>
+                <td class="label"></td>
+                <td class="value"></td>
+            </tr>
+            <tr>
+                <td class="label">Observações:</td>
+                <td class="value" colspan="3">{{ p.obs_laboratorio or '-' }}</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Faturamento</div>
+        <table class="grid">
+            <tr>
+                <td class="label">Faturista:</td>
+                <td class="value">{{ p.faturista or '-' }}</td>
+                <td class="label">Número NF:</td>
+                <td class="value">{{ p.numero_nf or '-' }}</td>
+            </tr>
+            <tr>
+                <td class="label">Data Faturamento:</td>
+                <td class="value">{{ p.data_faturamento.strftime('%d/%m/%Y') if p.data_faturamento else '-' }}</td>
+                <td class="label">Valor Faturado:</td>
+                <td class="value">R$ {{ p.valor_faturado or '0,00' }}</td>
+            </tr>
+            <tr>
+                <td class="label">Chave NFe:</td>
+                <td class="value" colspan="3" style="font-size: 8pt; font-family: monospace;">{{ p.chave_nfe or '-' }}</td>
+            </tr>
+            <tr>
+                <td class="label">Problema Fat.:</td>
+                <td class="value" colspan="3">{{ p.problema_faturar or '-' }}</td>
+            </tr>
+             <tr>
+                <td class="label">Observações:</td>
+                <td class="value" colspan="3">{{ p.obs_faturamento or '-' }}</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="footer">
+        Gerado automaticamente por CAP TECH TRANSPORTATION em {{ p.updated_at.strftime('%d/%m/%Y %H:%M') if p.updated_at else '' }}
+    </div>
+</body>
+</html>

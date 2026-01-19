@@ -1,0 +1,81 @@
+/* app/static/css/base.css */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap");
+
+:root {
+  --brand: #0f766e;
+  --brand-hover: #0d645d;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.font-inter {
+  font-family: "Inter", sans-serif;
+}
+
+.brand-bg { background-color: var(--brand); }
+.brand-hover:hover { background-color: var(--brand-hover); }
+.brand-text { color: var(--brand); }
+.brand-border { border-color: var(--brand); }
+
+.brand-ring:focus {
+  --tw-ring-color: var(--brand);
+  border-color: var(--brand);
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+.animate-shake {
+  animation: shake 0.2s ease-in-out 0s 2;
+}
+
+/* ===============================
+   Layout compacto e consistente
+   - sem scroll interno
+   =============================== */
+
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px;
+}
+
+/* Card mais compacto:
+   - mínimo: 480px
+   - ideal: 68vh
+   - máximo: 640px
+*/
+.app-card {
+  width: 100%;
+  max-width: 56rem; /* ~ max-w-4xl */
+  height: clamp(480px, 68vh, 640px);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+/* Remove qualquer chance de scroll por painel */
+.app-panel-scroll {
+  height: 100%;
+  overflow: hidden;
+}
+
+@supports (padding: env(safe-area-inset-top)) {
+  .app-shell {
+    padding-top: calc(14px + env(safe-area-inset-top));
+    padding-bottom: calc(14px + env(safe-area-inset-bottom));
+  }
+}
+
+/* Ajuste para telas com pouca altura: ainda sem scroll, reduzindo mais */
+@media (max-height: 720px) {
+  .app-card {
+    height: clamp(460px, 72vh, 600px);
+  }
+}

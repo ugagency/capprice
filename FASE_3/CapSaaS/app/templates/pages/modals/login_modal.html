@@ -1,0 +1,49 @@
+<!-- app/templates/pages/modals/login_modal.html -->
+<!--
+  Modal reutilizável para mensagens na tela de login.
+  - Abre via JS removendo a classe "hidden"
+  - Conteúdo (título/corpo) é injetado via JS
+  - Fecha por:
+      1) botão "Fechar"
+      2) clique no backdrop (fora do card)
+      3) tecla ESC
+-->
+
+<div
+  id="appModal"
+  class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="modalTitle"
+  aria-describedby="modalBody"
+>
+  <!-- Backdrop: ao clicar aqui (fora do card), fecha -->
+  <div class="absolute inset-0" data-modal-backdrop="true"></div>
+
+  <!-- Card do modal -->
+  <div class="relative bg-white p-8 rounded-2xl shadow-2xl w-full max-w-sm border border-gray-100">
+    <!-- Ícone -->
+    <div class="brand-bg w-12 h-12 rounded-full flex items-center justify-center text-white mb-5 mx-auto">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+        stroke="currentColor" class="w-6 h-6">
+        <path stroke-linecap="round" stroke-linejoin="round"
+          d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" />
+      </svg>
+    </div>
+
+    <!-- Conteúdo dinâmico -->
+    <h3 id="modalTitle" class="text-xl font-bold mb-2 text-gray-900 text-center">Suporte</h3>
+    <p id="modalBody" class="text-gray-500 text-center mb-6">
+      Entre em contato com o administrador para recuperar seu acesso.
+    </p>
+
+    <!-- Ação -->
+    <button
+      id="btnCloseModal"
+      type="button"
+      class="w-full brand-bg text-white py-3 rounded-xl font-bold brand-hover transition duration-300"
+    >
+      Fechar
+    </button>
+  </div>
+</div>

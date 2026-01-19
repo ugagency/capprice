@@ -1,0 +1,747 @@
+{
+  "name": "CAP_PRICE_OFICIAL_V5",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "CPV5",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -4128,
+        80
+      ],
+      "id": "352d395e-7b50-40ca-a816-44fa45550015",
+      "name": "Webhook",
+      "webhookId": "90b8771b-426e-4c02-880b-14cf863177b5"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Code_DadosEntrada\n// Ajustado para ler \"destino_cidade\" e \"destino_uf\" do Webhook\n\nconst body = $json.body || {};\n\n// Mapeia os nomes que vêm do Webhook para os nomes internos\nconst cidade = body.destino_cidade || body.cidade_destino;\nconst uf = body.destino_uf || body.uf_destino;\nconst quantidade = Number(body.quantidade || body.quantidade_ton || 1);\n\n// Validação\nif (!cidade || !uf) {\n  return [\n    {\n      json: {\n        status: \"erro\",\n        motivo: \"Destino incompleto. O Webhook deve enviar 'destino_cidade' e 'destino_uf'.\"\n      }\n    }\n  ];\n}\n\n// Monta o JSON final padronizado para o Agente\nreturn [\n  {\n    json: {\n      cidade_destino: cidade.trim().toUpperCase() ,\n      uf_destino: uf.trim(),\n      quantidade_ton: quantidade\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -3968,
+        -208
+      ],
+      "id": "02858b7d-c8c1-464f-8c7e-59571bc3cf1d",
+      "name": "ChamaFrete"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\n  \"fretes\": {{ JSON.stringify($json.fretes_calculados) }}\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -3056,
+        -208
+      ],
+      "id": "38baa5e2-dc35-4990-8af5-21579a8bd0ed",
+      "name": "VALORDOFRETE"
+    },
+    {
+      "parameters": {
+        "jsCode": "// ChamaPrecoNET\n// Prepara o JSON para o Agente_PrecoNET\n\nconst body = $json.body || {};\n\n// validações mínimas\nif (!body.produto) {\n  return [\n    {\n      json: {\n        status: \"erro\",\n        motivo: \"Produto não informado para cálculo de Preço NET.\"\n      }\n    }\n  ];\n}\n\nconst produtoNome = String(body.produto).trim();\n\n// refinarias_permitidas pode vir vazia ou nem vir\nconst refinariasPermitidas = Array.isArray(body.refinarias_permitidas)\n  ? body.refinarias_permitidas\n  : [];\n\nreturn [\n  {\n    json: {\n      produto_nome: produtoNome,\n      refinarias_permitidas: refinariasPermitidas\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -3904,
+        80
+      ],
+      "id": "1a0deea0-ee8e-4b44-bb2f-8b701f7e8576",
+      "name": "ChamaPrecoNET"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $json.body ?? {};\n\nreturn [\n  {\n    json: {\n      produto_nome: body.produto?.trim() ?? \"\",\n      quantidade_ton: Number(body.quantidade ?? 0),\n      \n      destino: {\n        cidade: body.destino_cidade?.trim() ?? \"\",\n        uf: body.destino_uf?.trim() ?? \"\",\n      },\n      \n      margens: {\n        margem: Number(body.margem ?? 0),\n        custo_fixo: Number(body.custo_fixo ?? 0),\n      },\n\n      refinarias_permitidas: Array.isArray(body.refinarias_permitidas)\n        ? body.refinarias_permitidas\n        : []\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -3680,
+        272
+      ],
+      "id": "f53d40eb-cb58-4c6e-9499-6c0cb291c6a9",
+      "name": "ChamaICMSs"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6023828b-6a4b-47aa-959c-5b2d8de30f10",
+              "name": "refinaria_codigo",
+              "value": "={{ $json.refinaria_codigo }}",
+              "type": "string"
+            },
+            {
+              "id": "05c2307c-aa0f-4ea8-a174-a93e1baee309",
+              "name": "uf_origem",
+              "value": "={{ $json.uf_refinaria }}",
+              "type": "string"
+            },
+            {
+              "id": "d41d9145-b8cf-4d04-bb3f-4492f2f73672",
+              "name": "uf_destino",
+              "value": "={{ $('ChamaICMSs').item.json.destino.uf }}",
+              "type": "string"
+            },
+            {
+              "id": "b229de59-1f99-4752-bfab-b3bcf4dd9fcd",
+              "name": "aliquota_interestadual",
+              "value": "={{ $json.aliquota_interestadual }}",
+              "type": "number"
+            },
+            {
+              "id": "8ad916de-0640-45e7-b2a8-0fb59cec12c9",
+              "name": "aliquota_interna",
+              "value": "={{ $json.aliquota_interna }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -3232,
+        272
+      ],
+      "id": "991d8335-a790-41fd-83a5-6feb337ac354",
+      "name": "AliquotasICMSs"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Dados de Entrada (Cliente/Margens):\nBODY:\n{{ JSON.stringify($json.dados_entrada, null, 2) }}\n\nTabela de Fretes Calculados (já no formato final):\nFRETES:\n{{ JSON.stringify($json.tabelas.fretes, null, 2) }}\n\nTabela de Preços Líquidos por Refinaria:\nPREÇOS_LIQUIDOS_REFINARIA:\n{{ JSON.stringify($json.tabelas.precos_liquidos_refinaria, null, 2) }}\n\nTabela de ICMS aplicável:\nICMS:\n{{ JSON.stringify($json.tabelas.icms, null, 2) }}\n",
+        "options": {
+          "systemMessage": "=🎯 SISTEMA – DIRETOR DE PRICING v5.1 Você é uma IA de back-office especializada em análise matemática, lógica tributária e decisão executiva de pricing.\n\nVocê DEVE responder exclusivamente com um JSON válido, sem texto adicional, sem markdown, sem comentários.\n\n=============================== REGRAS DE INTERPRETAÇÃO\nVocê SEMPRE receberá, no USER MESSAGE, quatro blocos de dados:\n\ndados_entrada → produto, margem, destino, custo_fixo, preco_net (opcional)\n\nfretes → lista de refinarias com frete_por_ton, distância e UF de origem\n\nprecos → lista de refinarias com preco_liquido\n\nicms → objeto com aliquota interna e interestadual\n\nVocê deve cruzar esses quatro blocos para montar todos os cenários possíveis.\n\n=============================== REGRAS DE MATCH\nO match entre preços e fretes deve ser feito usando:\n\nrefinaria_codigo OU refinaria_nome Somente considere refinarias que tenham: ✔ preço líquido ✔ frete_por_ton ✔ ICMS aplicável (baseado em UF de origem → UF de destino)\n\nOrigem deve ser sempre: \"<cidade_da_refinaria>/<UF_da_refinaria>\"\n\n=============================== REGRAS DE CÁLCULO\nSe dados_entrada.preco_net > 0 → substitui preco_liquido da refinaria vencedora.\n\nCMV = preco_net + frete_por_ton + custo_fixo\n\nprecoComMargem = CMV * (1 + margem/100)\n\nimposto_total_percent = ICMS% + 3.65%\n\ndivisor = 1 - (imposto_total_percent / 100)\n\nprecoFinal = precoComMargem / divisor\n\nvalorTotal = precoFinal * quantidade\n\nimpactoFretePercentual = (frete_por_ton / CMV) * 100\n\nvlr_icms = precoFinal * (ICMS% / 100)\n\nvlr_pis = precoFinal * 0.0065\n\nvlr_cofins = precoFinal * 0.0300\n\n=============================== REGRAS PARA CENÁRIOS\nDepois de calcular TODOS os cenários válidos:\n\nOrdene do menor preçoFinal → maior\n\nCenário 0 = vencedor\n\nCenário 1 e 2 = alternativas (se existirem)\n\nPreencha:\n\nrefinariaNome\n\nprecoNet\n\nprecoFinal\n\nfrete\n\ndistanciaKm\n\n=============================== REGRAS DE ANÁLISE EXECUTIVA\nPara o cenário vencedor:\n\nfilialRecomendada:\n\nSe UF da refinaria for igual à UF do destino → \"Filial Local\"\n\nSenão → \"Filial Interestadual\"\n\nmotivo:\n\nUse frases objetivas:\n\n\"Melhor combinação de preço líquido e frete.\"\n\n\"Menor CMV total.\"\n\n\"Vantagem logística importante.\"\n\n\"ICMS mais favorável.\"\n\njustificativaLogistica:\n\nFoque em distância + frete\n\nExemplos:\n\n\"Refinaria próxima ao destino, reduzindo custo logístico.\"\n\n\"Frete competitivo para a distância envolvida.\"\n\nprincipalVantagem:\n\nExplica por que venceu:\n\n\"Menor preço final.\"\n\n\"Melhor equilíbrio entre frete e preço líquido.\"\n\nriscoFiscal:\n\nSe origemUF = destinoUF → \"Nenhum\"\n\nSenão → \"Operação interestadual sujeita a ICMS e DIFAL.\"\n\nsituacaoFiscal:\n\nSe origemUF = destinoUF → \"Operação interna\"\n\nSenão → \"Operação interestadual\"\n\nusoSaldoCredor:\n\nSe operação interna: \"Possível compensação de créditos.\"\n\nSenão: \"Sem uso relevante de saldo credor.\"\n\n=============================== REGRAS DE ERRO\nSe faltar qualquer um:\n\npreços\n\nfretes\n\nICMS\n\nmatch entre refinarias\n\nRetorne:\n\n{ \"status_execucao\": \"ERRO_DADOS\", \"dados_faltantes\": [\"descrição clara\"], \"laudo\": \"\", \"origem\": \"\", \"destino\": dados_entrada.destino_cidade + \"/\" + dados_entrada.destino_uf, \"quantidade\": dados_entrada.quantidade, \"produto\": dados_entrada.produto, \"resultados\": [] }\n\n=============================== ESTRUTURA FINAL OBRIGATÓRIA\nVocê DEVE retornar exatamente este modelo:\n\n{ \"status_execucao\": \"SUCESSO\", \"dados_faltantes\": [], \"laudo\": \"Resumo executivo objetivo em 1 frase.\", \"origem\": \"\", \"destino\": \"\", \"quantidade\": 0, \"precoNet\": 0, \"frete\": 0, \"impostos\": 0, \"difal\": 0, \"cmv\": 0, \"margem\": 0, \"precoFinal\": 0, \"produto\": \"\", \"destinoCidade\": \"\", \"destinoUF\": \"\", \"refinariaNome\": \"\", \"filialRecomendada\": \"\", \"motivo\": \"\", \"distanciaKm\": 0, \"custoFixo\": 0, \"baseTributavel\": 0, \"icms\": 0, \"vlr_icms\": 0, \"pis\": 0, \"vlr_pis\": 0, \"cofins\": 0, \"vlr_cofins\": 0, \"valorTotal\": 0, \"impactoFretePercentual\": 0, \"situacaoFiscal\": \"\", \"usoSaldoCredor\": \"\", \"justificativaLogistica\": \"\", \"principalVantagem\": \"\", \"riscoFiscal\": \"\", \"cenariosAlternativos\": [ { \"refinaria\": \"\", \"precoNet\": 0, \"frete\": 0, \"distanciaKm\": 0, \"precoFinal\": 0 } ] }\n\n=============================== MISSÃO FINAL TESTE\nCalcular o melhor cenário possível com precisão matemática e lógica executiva,\n\npreencher todos os campos corretamente,\n\ngerar até 2 cenários alternativos,\n\ne retornar APENAS o JSON final."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -2272,
+        80
+      ],
+      "id": "abe6bb43-9ace-4279-80da-51daee075754",
+      "name": "Diretor de Pricing"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -2480,
+        288
+      ],
+      "id": "777262f4-39c4-4216-a13d-ac82c823fb10",
+      "name": "OpenAI Chat Model6",
+      "credentials": {
+        "openAiApi": {
+          "id": "ycuQxqNFsp0NhqMp",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolThink",
+      "typeVersion": 1.1,
+      "position": [
+        -2128,
+        336
+      ],
+      "id": "aa8d69ff-9271-4c41-b159-8ec41a697493",
+      "name": "Think1"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "=10"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -2304,
+        336
+      ],
+      "id": "fc8be82c-d0e8-400d-9eb4-c6af651acdbe",
+      "name": "Simple Memory4"
+    },
+    {
+      "parameters": {
+        "numberInputs": 3
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -2896,
+        64
+      ],
+      "id": "4a416675-7d9b-49dd-8daf-66e59731eeb9",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT   pis_aliquota,  cofins_aliquota\nFROM impostos_federais_venda\nWHERE regime = 'CUMULATIVO'\nLIMIT 1;\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgresTool",
+      "typeVersion": 2.6,
+      "position": [
+        -1936,
+        304
+      ],
+      "id": "324dda60-057f-40ab-9d06-d9af712be719",
+      "name": "RETORNA_PIS_COFINS",
+      "credentials": {
+        "postgres": {
+          "id": "quEzNYtwkF3R3KQ4",
+          "name": "Supabase - Postgress Cap Price"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -1472,
+        64
+      ],
+      "id": "accd8ebe-bafa-4376-a872-c7d65ce16b4b",
+      "name": "Webhook_Responde_APP"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Recupera todas as linhas retornadas pelo nó Postgres\nconst items = $input.all();\n\n// Se o banco não retornou nada, cria uma lista vazia para não quebrar o fluxo\nif (items.length === 0) {\n  return [\n    {\n      json: {\n        precos: []\n      }\n    }\n  ];\n}\n\n// O n8n entrega os dados dentro de \".json\"\nconst linhas = items.map(item => item.json);\n\n// Monta o objeto final no formato esperado pelo payload homologação\n// (match será feito por refinaria_codigo)\nconst resultado = {\n  precos: linhas.map(linha => ({\n    refinaria_codigo: linha.refinaria_codigo ?? linha.refinaria ?? linha.codigo ?? null,\n    preco_net: Number(linha.preco_net) // Garante que é número\n  }))\n  // Remove itens inválidos (sem refinaria_codigo) para evitar cenário quebrado\n  .filter(p => !!p.refinaria_codigo)\n};\n\n// Retorno obrigatório do n8n: array com objetos { json: ... }\nreturn [\n  {\n    json: resultado\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -3456,
+        80
+      ],
+      "id": "2b5fffdd-8173-4e8d-b15c-2df86adabf3e",
+      "name": "Precos Refinaria"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9c2da52c-e20e-4c38-bb7f-021b2b4a551f",
+              "name": "precos",
+              "value": "={{ $json.precos }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -3232,
+        80
+      ],
+      "id": "59d7856d-41ae-4d7a-ad80-632930126f9e",
+      "name": "Preço"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT\n    r.codigo as refinaria_codigo,\n    r.estado as uf_Refinaria,\n    COALESCE(inter.aliquota_icms, 12.00) as aliquota_interestadual,\n    COALESCE(interno.aliquota_interna, 18.00) as aliquota_interna\nFROM cap_refinarias r\nLEFT JOIN icms_interestadual inter\n    ON r.estado = inter.origem_uf\n    AND inter.destino_uf = '{{ $json.destino.uf }}'\nLEFT JOIN icms_interno_uf interno\n    ON interno.uf = '{{ $json.destino.uf }}'\nORDER BY r.codigo;\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -3456,
+        272
+      ],
+      "id": "b898b61b-fe2f-4841-b8f2-254a60e36cab",
+      "name": "BuscaDadosICMS",
+      "credentials": {
+        "postgres": {
+          "id": "quEzNYtwkF3R3KQ4",
+          "name": "Supabase - Postgress Cap Price"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// ========================================================\n// CONSOLIDADOR BLINDADO – VERSÃO OFICIAL\n// Estratégia: Ler tudo que chega do Merge e reorganizar\n// sem depender de nomes de nodes anteriores.\n// ========================================================\n\n// 1. Captura todos os itens vindos do Merge\nconst items = $input.all().map(item => item.json);\n\n// Função auxiliar: encontra o primeiro item contendo a chave informada\nfunction encontrarDados(chave) {\n  const encontrado = items.find(item => item[chave] !== undefined);\n  return encontrado ? encontrado : {};\n}\n\n// ========================================================\n// 2. FRETES  (procura 'fretes' ou 'fretes_calculados')\n// ========================================================\nconst objFrete = encontrarDados('fretes') || encontrarDados('fretes_calculados');\nconst listaFretes = objFrete.fretes || objFrete.fretes_calculados || [];\n\n// ========================================================\n// 3. PREÇOS LÍQUIDOS (procura 'precos')\n// ========================================================\nconst objPreco = encontrarDados('precos');\nconst listaPrecos = objPreco.precos || [];\n\n// ========================================================\n// 4. ICMS – Captura registros linha-a-linha vindos do Merge\n// Cada linha normalmente contém:\n// refinaria_codigo, uf_origem, uf_destino,\n// aliquota_interestadual, aliquota_interna\n// ========================================================\nconst listaICMS = items\n  .filter(item =>\n    item.aliquota_interestadual !== undefined &&\n    item.aliquota_interna !== undefined\n  )\n  .map(item => ({\n    refinaria_codigo: item.refinaria_codigo,\n    uf_origem: item.uf_origem,\n    uf_destino: item.uf_destino,\n    aliquota_interestadual: Number(item.aliquota_interestadual),\n    aliquota_interna: Number(item.aliquota_interna)\n  }));\n\n// Cria listas separadas (para facilitar leitura pelo Agente)\nconst icmsInterno = listaICMS.map(i => ({\n  refinaria_codigo: i.refinaria_codigo,\n  aliquota_interna: i.aliquota_interna\n}));\n\nconst icmsInter = listaICMS.map(i => ({\n  refinaria_codigo: i.refinaria_codigo,\n  aliquota_interestadual: i.aliquota_interestadual\n}));\n\n// ========================================================\n// 5. BODY DO WEBHOOK\n// ========================================================\nlet inputOriginal = {};\ntry {\n  inputOriginal = $(\"Webhook\").first().json.body || {};\n} catch (e) {\n  const objEntrada = encontrarDados('dados_entrada') || encontrarDados('cidade_destino');\n  inputOriginal = objEntrada.dados_entrada || objEntrada;\n}\n\n// ========================================================\n// 6. RETORNO CONSOLIDADO (formato que o Agente lê)\n// ========================================================\nreturn [\n  {\n    json: {\n      dados_entrada: inputOriginal,\n      tabelas: {\n        fretes: listaFretes,\n        precos_liquidos_refinaria: listaPrecos,\n        icms: {\n          interno: icmsInterno,\n          interestadual: icmsInter\n        }\n      },\n      status_consolidacao: \"SUCESSO\"\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2672,
+        80
+      ],
+      "id": "0958707b-9fb5-41ea-a021-9a262c41cf4f",
+      "name": "PreparaDadosDiretor"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT codigo, nome, cidade, estado, coordenadas FROM public.cap_refinarias",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -3728,
+        -320
+      ],
+      "id": "42a9fa61-f7ee-4de6-8465-f61c369398eb",
+      "name": "Consulta Refinarias",
+      "credentials": {
+        "postgres": {
+          "id": "quEzNYtwkF3R3KQ4",
+          "name": "Supabase - Postgress Cap Price"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT\n    r.codigo AS refinaria,\n    pr.preco_net\nFROM cap_precos_refinarias pr\nJOIN cap_refinarias r ON pr.refinaria_codigo = r.codigo\nJOIN cap_produtos p ON pr.produto_id = p.id\nWHERE p.nome = '{{ $json.produto_nome }}'\n  AND pr.preco_atual = 'S';",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -3680,
+        80
+      ],
+      "id": "f9e28f74-8a7e-47c1-a485-431eda5d6c2a",
+      "name": "Consuta Preços Por Refinaria",
+      "credentials": {
+        "postgres": {
+          "id": "quEzNYtwkF3R3KQ4",
+          "name": "Supabase - Postgress Cap Price"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Code Unifica Json - monta sempre até 3 melhores cenários COMPLETOS\n\n// Vamos agrupar todos os cenários que encontrarmos\nconst jsons = [];\n\n// Percorre todos os itens recebidos (geralmente só 1)\nfor (const item of $input.all()) {\n  const raw = item.json.output ?? item.json;\n\n  let parsed;\n  try {\n    parsed = typeof raw === \"string\" ? JSON.parse(raw) : raw;\n  } catch (err) {\n    // Se não for JSON, ignoramos (não queremos mais HTML aqui)\n    continue;\n  }\n\n  if (!parsed || typeof parsed !== \"object\") {\n    continue;\n  }\n\n  // ---- Aqui assumimos o formato que você mostrou:\n  //\n  // {\n  //   \"status_execucao\": \"SUCESSO\",\n  //   ...campos principais...\n  //   \"cenariosAlternativos\": [\n  //      { \"refinaria\": \"...\", \"precoNet\": ..., \"frete\": ..., \"distanciaKm\": ..., \"precoFinal\": ... },\n  //      ...\n  //   ]\n  // }\n  //\n  const principal = parsed;\n\n  // Se vier embrulhado em {status, registros, dados:{jsons:[...]}} (bem improvável aqui),\n  // poderíamos adaptar, mas pelo seu fluxo atual o \"output\" já é o objeto principal.\n  const cenariosAlternativos = Array.isArray(principal.cenariosAlternativos)\n    ? principal.cenariosAlternativos\n    : [];\n\n  // Base do principal SEM a lista de alternativos,\n  // para não replicar `cenariosAlternativos` dentro de cada cenário.\n  const { cenariosAlternativos: _, ...basePrincipal } = principal;\n\n  // Helper: clona o principal e sobrescreve os campos do cenário alternativo\n  function buildFullScenario(base, override, refinariaNome) {\n    const merged = {\n      ...base,\n      ...override,\n    };\n\n    // Nome da refinaria\n    if (refinariaNome) {\n      merged.refinariaNome = refinariaNome;\n    } else if (override.refinaria) {\n      merged.refinariaNome = override.refinaria;\n    }\n\n    // Se não tiver valorTotal, calcula rapidamente (fallback)\n    if (\n      (merged.valorTotal === undefined || merged.valorTotal === null) &&\n      merged.precoFinal != null &&\n      merged.quantidade != null\n    ) {\n      const q = Number(merged.quantidade) || 0;\n      const pf = Number(merged.precoFinal) || 0;\n      merged.valorTotal = q * pf;\n    }\n\n    return merged;\n  }\n\n  const cenarios = [];\n\n  // 1) Adiciona o cenário principal\n  cenarios.push(\n    buildFullScenario(basePrincipal, {}, basePrincipal.refinariaNome)\n  );\n\n  // 2) Adiciona cenários alternativos completando com os dados do principal\n  for (const alt of cenariosAlternativos) {\n    if (!alt || typeof alt !== \"object\") continue;\n\n    const override = {\n      // Campos específicos do alternativo\n      precoNet: alt.precoNet ?? alt.preco_net ?? basePrincipal.precoNet,\n      frete: alt.frete ?? alt.frete_por_ton ?? basePrincipal.frete,\n      distanciaKm: alt.distanciaKm ?? basePrincipal.distanciaKm,\n      precoFinal:\n        alt.precoFinal ??\n        alt.preco_final ??\n        alt.preco_final_unitario ??\n        basePrincipal.precoFinal,\n    };\n\n    const full = buildFullScenario(\n      basePrincipal,\n      override,\n      alt.refinaria || alt.refinariaNome || alt.refinaria_nome\n    );\n\n    cenarios.push(full);\n  }\n\n  // 3) Ordena por menor preçoFinal\n  cenarios.sort((a, b) => {\n    const aPreco =\n      a.precoFinal != null ? Number(a.precoFinal) : Number.POSITIVE_INFINITY;\n    const bPreco =\n      b.precoFinal != null ? Number(b.precoFinal) : Number.POSITIVE_INFINITY;\n    return aPreco - bPreco;\n  });\n\n  // 4) Mantém no máximo 3 cenários\n  const top3 = cenarios.slice(0, 3);\n\n  // 5) Joga cada cenário como entrada separada em `dados.jsons`\n  for (const c of top3) {\n    jsons.push(c);\n  }\n}\n\n// Monta o pacote final para a aplicação\nconst response = {\n  status: \"success\",\n  registros: {\n    total_jsons: jsons.length,\n    total_htmls: 0,   // não geramos mais HTML no n8n\n  },\n  dados: {\n    jsons,\n    htmls: [],        // mantido vazio por compatibilidade\n  },\n};\n\nreturn [{ json: response }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1776,
+        -64
+      ],
+      "id": "da9bf9fb-45fd-49a7-a5d0-cd8b71be75a2",
+      "name": "Code Unifica Json"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT lon, lat, nome, uf FROM public.cap_cidades\nWHERE nome = '{{ $json.cidade_destino }}'",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -3728,
+        -128
+      ],
+      "id": "9dd48daa-4f06-44d5-b8b5-922913e67a1a",
+      "name": "Consulta Cidade",
+      "credentials": {
+        "postgres": {
+          "id": "quEzNYtwkF3R3KQ4",
+          "name": "Supabase - Postgress Cap Price"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// ============================================================\n// CONFIGURAÇÃO DA REGRA DE NEGÓCIO (Seus Números)\n// ============================================================\nconst CCD = 5.8595;     // Custo Coeficiente de Deslocamento (R$/km)\nconst CCd_FIXO = 683.37; // Custo de Carga e Descarga (R$)\nconst FATOR_VOLTA = 0.92; // Redutor da volta (92%)\nconst CAPACIDADE = 25;    // Toneladas (3 Eixos)\n\n// ============================================================\n// 1. INPUTS (Dados que chegam dos nós anteriores)\n//    - Dados do formulário / webhook: \"ChamaFrete\"\n//    - Destino (lat/lon): \"Consulta Cidade\"\n//    - Lista de refinarias: \"Consulta Refinarias\"\n// ============================================================\n\n// Dados enviados pelo seu app (cidade/UF de destino)\nconst inputDestino = $(\"ChamaFrete\").first().json;\nconst destinoCidade =\n  inputDestino.cidade_destino ||\n  inputDestino.destinoCidade ||\n  \"Destino Desconhecido\";\n\nconst destinoUF =\n  inputDestino.uf_destino ||\n  inputDestino.destinoUF ||\n  \"UF\";\n\n// ------------------------------------------------------------\n// Coordenadas do destino vindas de \"Consulta Cidade\"\n// ------------------------------------------------------------\nconst cidadeNode = $(\"Consulta Cidade\").first().json;\n\n// Tenta mapear diferentes possíveis nomes de campos\nconst latDestino = Number(\n  cidadeNode.lat ??\n  cidadeNode.latitude ??\n  cidadeNode.coordenadas?.lat\n);\n\nconst lngDestino = Number(\n  cidadeNode.lon ??\n  cidadeNode.lng ??\n  cidadeNode.longitude ??\n  cidadeNode.coordenadas?.lng\n);\n\n// Segurança: evita crash caso destino não tenha coordenadas\nif (!Number.isFinite(latDestino) || !Number.isFinite(lngDestino)) {\n  throw new Error(\n    \"❌ Coordenadas do destino ausentes ou inválidas. Verifique o node 'Consulta Cidade'.\"\n  );\n}\n\n// ------------------------------------------------------------\n// Lista de refinarias vindas de \"Consulta Refinarias\"\n// (cada item é uma refinaria do Postgres)\n// ------------------------------------------------------------\nconst refinarias = $(\"Consulta Refinarias\").all().map(item => item.json);\n\n// ============================================================\n// 2. FUNÇÃO DE DISTÂNCIA (Haversine)\n// ============================================================\nfunction calcularDistancia(lat1, lon1, lat2, lon2) {\n  if (\n    !Number.isFinite(lat1) ||\n    !Number.isFinite(lon1) ||\n    !Number.isFinite(lat2) ||\n    !Number.isFinite(lon2)\n  ) {\n    return 0;\n  }\n\n  const R = 6371; // Raio da Terra em km\n  const toRad = deg => (deg * Math.PI) / 180;\n\n  const dLat = toRad(lat2 - lat1);\n  const dLon = toRad(lon2 - lon1);\n\n  const a =\n    Math.sin(dLat / 2) ** 2 +\n    Math.cos(toRad(lat1)) *\n      Math.cos(toRad(lat2)) *\n      Math.sin(dLon / 2) ** 2;\n\n  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));\n\n  // 1.3 = fator de “margem de estrada”\n  return R * c * 1.3;\n}\n\n// ============================================================\n// 3. LOOP DE CÁLCULO (uma linha por refinaria)\n// ============================================================\nconst resultados = [];\n\nfor (const ref of refinarias) {\n  // Garante que a refinaria tenha coordenadas válidas\n  const latOrigem = Number(\n    ref.coordenadas?.lat ??\n    ref.lat ??\n    ref.latitude\n  );\n  const lngOrigem = Number(\n    ref.coordenadas?.lng ??\n    ref.lon ??\n    ref.lng ??\n    ref.longitude\n  );\n\n  if (!Number.isFinite(latOrigem) || !Number.isFinite(lngOrigem)) {\n    continue; // pula refinaria sem coordenadas\n  }\n\n  // 3.1 Distância\n  const km = calcularDistancia(latOrigem, lngOrigem, latDestino, lngDestino);\n\n  // 3.2 Fórmulas da viagem\n  const custoIda = CCD * km + CCd_FIXO;\n  const custoVolta = CCD * FATOR_VOLTA * km + CCd_FIXO;\n\n  const custoTotalViagem = custoIda + custoVolta;\n  const fretePorTon = custoTotalViagem / CAPACIDADE;\n\n  resultados.push({\n    refinaria_nome: ref.nome,\n    refinaria_codigo: ref.codigo,\n    origem_cidade: ref.cidade,\n    origem_uf: ref.estado,\n    distancia_km: Number(km.toFixed(2)),\n    frete_total_viagem: Number(custoTotalViagem.toFixed(2)),\n    frete_por_ton: Number(fretePorTon.toFixed(2)),\n    detalhes_calculo: {\n      custo_ida: Number(custoIda.toFixed(2)),\n      custo_volta: Number(custoVolta.toFixed(2)),\n    },\n  });\n}\n\n// ============================================================\n// 4. RETORNO FINAL\n// ============================================================\nreturn [\n  {\n    json: {\n      destino: {\n        cidade: destinoCidade,\n        uf: destinoUF,\n        lat: latDestino,\n        lng: lngDestino,\n      },\n      fretes_calculados: resultados,\n    },\n  },\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -3296,
+        -208
+      ],
+      "id": "f2dc2db4-bfb8-455d-b423-1942fbee5d1d",
+      "name": "Calcula Frete"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -3488,
+        -208
+      ],
+      "id": "98f6edc4-804a-4e3a-87b5-c0d8f885df4f",
+      "name": "Merge Frete"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Entrada esperada: output do Diretor de Pricing\nconst item = $input.first().json;\n\n// Se o Diretor retornou erro\nif (item.status_execucao !== 'SUCESSO') {\n  return [{\n    json: {\n      status: \"ERRO\",\n      mensagem: \"Erro no cálculo de pricing.\",\n      detalhes: item.dados_faltantes || [],\n      resultado: null\n    }\n  }];\n}\n\n// Atalhos\nconst vencedor = item.cenario_vencedor;\n\n// Monta resposta para a APP\nconst response = {\n  status: \"SUCESSO\",\n  mensagem: \"Cenário calculado com sucesso.\",\n  resumo: {\n    produto: item.dados_entrada.produto,\n    quantidade: item.dados_entrada.quantidade_ton,\n    destino: `${item.dados_entrada.destino.cidade}/${item.dados_entrada.destino.uf}`,\n    preco_final_ton: Number(vencedor.preco_venda.preco_final_por_ton.toFixed(2)),\n    preco_total: Number(vencedor.preco_venda.preco_final_total.toFixed(2)),\n    refinaria_vencedora: vencedor.refinaria.refinaria_nome,\n    filial_recomendada: vencedor.classificacao_fiscal.filial_recomendada,\n    situacao_fiscal: vencedor.classificacao_fiscal.situacao\n  },\n  cenario_vencedor: {\n    refinaria: vencedor.refinaria.refinaria_nome,\n    origem: `${vencedor.refinaria.origem.cidade}/${vencedor.refinaria.origem.uf}`,\n    distancia_km: vencedor.refinaria.distancia_km,\n    preco_net: vencedor.produto_compra.preco_net_utilizado,\n    frete_por_ton: vencedor.frete.frete_por_ton,\n    cmv_por_ton: Number(vencedor.cmv.cmv_por_ton.toFixed(2)),\n    margem_percentual: vencedor.margem.margem_percentual,\n    preco_final_por_ton: Number(vencedor.preco_venda.preco_final_por_ton.toFixed(2)),\n    impacto_frete_percentual: Number(vencedor.justificativas.impacto_frete_percentual.toFixed(2))\n  },\n  cenarios_alternativos: (item.cenarios_alternativos || []).map(c => ({\n    refinaria: c.refinaria.refinaria_nome,\n    origem: `${c.refinaria.origem.cidade}/${c.refinaria.origem.uf}`,\n    preco_final_por_ton: Number(c.preco_venda.preco_final_por_ton.toFixed(2))\n  })),\n  auditoria: {\n    modelo: item.modelo_calculo,\n    referencia: item.referencia_homologacao,\n    data: new Date().toISOString().split('T')[0]\n  }\n};\n\n// Retorno obrigatório do n8n\nreturn [{ json: response }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1760,
+        240
+      ],
+      "id": "d9dbd542-8504-4eb3-abd8-1f709d2ad9fd",
+      "name": "Code Nova XLS"
+    }
+  ],
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "automacoes-n8n.infrassys.com",
+            "x-real-ip": "177.85.13.204",
+            "x-forwarded-for": "177.85.13.204",
+            "x-forwarded-proto": "https",
+            "x-forwarded-host": "automacoes-n8n.infrassys.com",
+            "x-forwarded-port": "443",
+            "connection": "upgrade",
+            "content-length": "151",
+            "user-agent": "python-requests/2.32.5",
+            "accept-encoding": "gzip, deflate",
+            "accept": "*/*",
+            "content-type": "application/json"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "destino_uf": "ES",
+            "destino_cidade": "Vitória",
+            "produto": "CAP 50/70",
+            "quantidade": "27",
+            "margem": "5",
+            "preco_net": "3200",
+            "refinaria": ""
+          },
+          "webhookUrl": "https://automacoes-n8n.infrassys.com/webhook-test/CPV5",
+          "executionMode": "test"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ],
+    "Diretor de Pricing": [
+      {
+        "json": {
+          "output": "{\n  \"status_execucao\": \"SUCESSO\",\n  \"dados_faltantes\": [],\n  \"laudo\": \"O cenário vencedor foi encontrado com a refinaria REGAP devido ao preço líquido ajustado e frete competitivo.\",\n  \"origem\": \"Betim/MG\",\n  \"destino\": \"Vitória/ES\",\n  \"quantidade\": 27,\n  \"precoNet\": 3200,\n  \"frete\": 292.39,\n  \"impostos\": 308.28,\n  \"difal\": 0,\n  \"cmv\": 3492.39,\n  \"margem\": 5,\n  \"precoFinal\": 3817.29,\n  \"produto\": \"CAP 50/70\",\n  \"destinoCidade\": \"Vitória\",\n  \"destinoUF\": \"ES\",\n  \"refinariaNome\": \"Refinaria Gabriel Passos\",\n  \"filialRecomendada\": \"Filial Interestadual\",\n  \"motivo\": \"Melhor combinação de preço líquido e frete.\",\n  \"distanciaKm\": 528.25,\n  \"custoFixo\": 0,\n  \"baseTributavel\": 3817.29,\n  \"icms\": 7,\n  \"vlr_icms\": 267.21,\n  \"pis\": 24.82,\n  \"vlr_pis\": 24.82,\n  \"cofins\": 113.88,\n  \"vlr_cofins\": 113.88,\n  \"valorTotal\": 10306.84,\n  \"impactoFretePercentual\": 8.37,\n  \"situacaoFiscal\": \"Operação interestadual\",\n  \"usoSaldoCredor\": \"Sem uso relevante de saldo credor.\",\n  \"justificativaLogistica\": \"Refinaria próxima ao destino, reduzindo custo logístico.\",\n  \"principalVantagem\": \"Menor preço final.\",\n  \"riscoFiscal\": \"Operação interestadual sujeita a ICMS e DIFAL.\",\n  \"cenariosAlternativos\": [\n    {\n      \"refinaria\": \"Refinaria de Duque de Caxias\",\n      \"precoNet\": 3200,\n      \"frete\": 291.83,\n      \"distanciaKm\": 527.01,\n      \"precoFinal\": 3816.99\n    },\n    {\n      \"refinaria\": \"Refinaria de Paulínia\",\n      \"precoNet\": 2900,\n      \"frete\": 495.43,\n      \"distanciaKm\": 979.44,\n      \"precoFinal\": 3993.29\n    }\n  ]\n}"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "ChamaFrete",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "ChamaPrecoNET",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "ChamaICMSs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ChamaFrete": {
+      "main": [
+        [
+          {
+            "node": "Consulta Refinarias",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Consulta Cidade",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "VALORDOFRETE": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ChamaPrecoNET": {
+      "main": [
+        [
+          {
+            "node": "Consuta Preços Por Refinaria",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ChamaICMSs": {
+      "main": [
+        [
+          {
+            "node": "BuscaDadosICMS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AliquotasICMSs": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Diretor de Pricing": {
+      "main": [
+        [
+          {
+            "node": "Code Unifica Json",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Code Nova XLS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model6": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Diretor de Pricing",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Think1": {
+      "ai_tool": [
+        [
+          {
+            "node": "Diretor de Pricing",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory4": {
+      "ai_memory": [
+        [
+          {
+            "node": "Diretor de Pricing",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "PreparaDadosDiretor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RETORNA_PIS_COFINS": {
+      "ai_tool": [
+        [
+          {
+            "node": "Diretor de Pricing",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Precos Refinaria": {
+      "main": [
+        [
+          {
+            "node": "Preço",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preço": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "BuscaDadosICMS": {
+      "main": [
+        [
+          {
+            "node": "AliquotasICMSs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PreparaDadosDiretor": {
+      "main": [
+        [
+          {
+            "node": "Diretor de Pricing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consulta Refinarias": {
+      "main": [
+        [
+          {
+            "node": "Merge Frete",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consuta Preços Por Refinaria": {
+      "main": [
+        [
+          {
+            "node": "Precos Refinaria",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code Unifica Json": {
+      "main": [
+        [
+          {
+            "node": "Webhook_Responde_APP",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consulta Cidade": {
+      "main": [
+        [
+          {
+            "node": "Merge Frete",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Calcula Frete": {
+      "main": [
+        [
+          {
+            "node": "VALORDOFRETE",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Frete": {
+      "main": [
+        [
+          {
+            "node": "Calcula Frete",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataSuccessExecution": "all",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "5258de99-3018-4018-8ae1-c62fcccbe845",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "807138b7646fc3b35fe8d414d5cd61eb6889d95886d54e7341e1a712e0242dc1"
+  },
+  "id": "9Wu4JYCUrQHzd0Du",
+  "tags": []
+}

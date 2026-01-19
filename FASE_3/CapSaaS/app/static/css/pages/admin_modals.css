@@ -1,0 +1,275 @@
+/* app/static/css/admin_modals.css */
+
+/* ===============================
+   Modal (isolado) - CAPSSYS
+   =============================== */
+
+.cs-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1050;
+  display: none;
+}
+
+.cs-modal.is-open {
+  display: block;
+}
+
+.cs-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(2px);
+}
+
+/* ===============================
+   Panel (mais compacto)
+   =============================== */
+
+.cs-modal__panel {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(980px, calc(100vw - 24px));
+  max-height: min(74vh, 640px); /* antes: 78vh/680px */
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 22px 60px rgba(2, 6, 23, 0.22);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+}
+
+.cs-modal__panel.is-lg {
+  width: min(1100px, calc(100vw - 24px));
+}
+
+/* ===============================
+   Header (compacto)
+   =============================== */
+
+.cs-modal__header {
+  padding: 12px 14px; /* antes: 16px 18px */
+  background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.cs-modal__title {
+  font-weight: 800;
+  font-size: 15px; /* antes: 16px */
+  color: #0f172a;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.cs-modal__close {
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  width: 34px;  /* antes: 36px */
+  height: 34px; /* antes: 36px */
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: 0.2s ease;
+  line-height: 1;
+}
+
+.cs-modal__close:hover {
+  background: #f1f5f9;
+}
+
+/* ===============================
+   Body / Toolbar (compacto)
+   =============================== */
+
+.cs-modal__body {
+  padding: 12px 14px; /* antes: 16px 18px */
+  overflow: auto;
+}
+
+.cs-modal__toolbar {
+  display: flex;
+  gap: 8px; /* antes: 10px */
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin-bottom: 10px; /* antes: 12px */
+}
+
+/* ===============================
+   Form controls (compactos)
+   =============================== */
+
+.cs-input {
+  width: min(460px, 100%); /* antes: 560px */
+  height: 36px;            /* antes: 40px */
+  padding: 0 10px;         /* antes: 12px */
+  border-radius: 10px;     /* antes: 12px */
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  outline: none;
+  font-size: 13px;
+}
+
+.cs-input:focus {
+  border-color: rgba(13, 148, 136, 0.55);
+  box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.12);
+}
+
+.cs-btn {
+  height: 36px;            /* antes: 40px */
+  padding: 0 12px;         /* antes: 14px */
+  border-radius: 10px;     /* antes: 12px */
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  cursor: pointer;
+  transition: 0.2s ease;
+  font-weight: 700;
+  color: #0f172a;
+  font-size: 13px;
+  line-height: 1;
+}
+
+.cs-btn:hover {
+  background: #f1f5f9;
+}
+
+.cs-btn--teal {
+  background: #0f766e;
+  border-color: #0f766e;
+  color: #fff;
+}
+
+.cs-btn--teal:hover {
+  background: #0d645d;
+  border-color: #0d645d;
+}
+
+/* ===============================
+   Table (mais compacta)
+   =============================== */
+
+.cs-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+}
+
+.cs-table thead th {
+  background: #f8fafc;
+  font-size: 11px; /* antes: 12px */
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #475569;
+  padding: 10px 12px; /* antes: 12px */
+  border-bottom: 1px solid #e2e8f0;
+  white-space: nowrap;
+}
+
+.cs-table tbody td {
+  padding: 10px 12px; /* antes: 12px */
+  border-bottom: 1px solid #f1f5f9;
+  color: #0f172a;
+  font-size: 13px;
+  vertical-align: middle;
+}
+
+.cs-table tbody tr:hover {
+  background: #f8fafc;
+}
+
+/* ===============================
+   Badges / Actions (compactos)
+   =============================== */
+
+.cs-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 9px;  /* antes: 4px 10px */
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 11px;   /* antes: 12px */
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  color: #0f172a;
+}
+
+.cs-badge--ok {
+  background: rgba(16, 185, 129, 0.10);
+  border-color: rgba(16, 185, 129, 0.25);
+  color: #065f46;
+}
+
+.cs-badge--off {
+  background: rgba(100, 116, 139, 0.10);
+  border-color: rgba(100, 116, 139, 0.25);
+  color: #334155;
+}
+
+.cs-badge--warn {
+  background: rgba(245, 158, 11, 0.12);
+  border-color: rgba(245, 158, 11, 0.28);
+  color: #92400e;
+}
+
+.cs-actions {
+  display: inline-flex;
+  gap: 8px;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+/* Links de ação na tabela (Editar/Reset/Inativar) */
+.cs-actions a,
+.cs-actions button {
+  font-size: 13px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+.cs-empty {
+  text-align: center;
+  color: #64748b;
+  padding: 14px 0 4px; /* antes: 18px 0 6px */
+  font-weight: 600;
+  font-size: 13px;
+}
+
+/* ===============================
+   Mobile
+   =============================== */
+
+@media (max-width: 640px) {
+  .cs-modal__panel,
+  .cs-modal__panel.is-lg {
+    width: calc(100vw - 16px);
+    max-height: 84vh;
+  }
+
+  .cs-modal__toolbar {
+    align-items: stretch;
+  }
+
+  /* no mobile o input ocupa 100% */
+  .cs-input {
+    width: 100%;
+  }
+
+  .cs-actions {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+}

@@ -1,0 +1,11 @@
+/* app/static/css/pages/login.css */
+
+.system-card:hover {
+  border-color: var(--brand);
+  background-color: #f0fdfa;
+}
+
+/* Ajustes finos para “compactar” o visual */
+.login-badge {
+  letter-spacing: 0.02em;
+}

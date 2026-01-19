@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% set page = "laboratorio" %}
+
+{% block content %}
+<!-- KPIs -->
+<div class="row g-3 mb-3" id="kpiRowLaboratorio"></div>
+
+<!-- Header + actions (padrão mestre) -->
+<div class="card master-card border-0 shadow-sm mb-3">
+  <div class="card-body py-3">
+    <div class="master-header">
+      <div class="master-headtext">
+        <div class="master-title">Laboratório</div>
+        <p class="master-subtitle">Registro de liberação e informações de qualidade/controle.</p>
+      </div>
+
+      <div class="master-actions">
+        <input id="busca" class="form-control form-control-sm master-search"
+          placeholder="Buscar por CHAVE/OV/Produto/Lote" />
+        <button id="btnExportar" class="btn btn-sm btn-outline-success master-btn">Exportar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Table (padrão mestre) -->
+<div class="card master-card border-0 shadow-sm">
+  <div class="table-responsive">
+    <table class="table master-table align-middle mb-0 laboratorio-table">
+      <thead>
+        <tr>
+          <th style="width:132px;">STATUS</th>
+          <th style="width:170px;">OV/REMESSA</th>
+          <th style="width:220px;">PRODUTO</th>
+          <th style="width:160px;">LOTE</th>
+          <th style="width:140px;">LIBERAÇÃO</th>
+          <th style="width:200px;"></th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+{% include "pages/modals/_modal_laboratorio.html" %}
+{% endblock %}
