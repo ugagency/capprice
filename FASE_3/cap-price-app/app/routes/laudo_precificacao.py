@@ -133,6 +133,8 @@ def _split_cidade_uf(
     return cidade_fallback, uf_fallback
 
 
+
+
 def _montar_contexto_laudo(
     cenario: Dict,
     cenarios_alternativos: List[Dict],
@@ -211,72 +213,17 @@ def _montar_contexto_laudo(
             }
         )
 
-    # NOVO: lista detalhada de cenários alternativos (Opção 2, 3, ...)
-    alternativos_detalhados: List[Dict[str, Any]] = []
-    for idx, alt in enumerate(cenarios_alternativos, start=2):
-        alt_quantidade = (
-            alt.get("quantidade")
-            or (raiz.get("quantidade") if isinstance(raiz, dict) else 0)
-            or 0
-        )
-        alt_preco_final = alt.get("precoFinal") or 0
-        alt_preco_net = alt.get("precoNet") or 0
-        alt_frete = alt.get("frete") or 0
-        alt_impostos = alt.get("impostos") or 0
-        alt_valor_total = alt.get("valorTotal") or 0
+    # Detecta se deve exibir a tabela interativa (se "TabelaV" estiver no laudo ou motivo)
+    # Broadened search: case-insensitive and checking multiple sources
+    search_str = "tabelav"
+    exibir_tabela_v = (
+        search_str in laudo_texto.lower() or 
+        search_str in motivo.lower() or
+        search_str in str(cenario).lower() or
+        search_str in str(raiz).lower()
+    )
 
-        alt_origem_str = alt.get("origem") or ""
-        alt_destino_str = alt.get("destino") or ""
-
-        alt_origem_cidade_fallback = alt.get("origemCidade") or origem_cidade
-        alt_origem_uf_fallback = alt.get("origemUF") or origem_uf
-        alt_destino_cidade_fallback = alt.get("destinoCidade") or destino_cidade
-        alt_destino_uf_fallback = alt.get("destinoUF") or destino_uf
-
-        alt_origem_cidade, alt_origem_uf = _split_cidade_uf(
-            alt_origem_str, alt_origem_cidade_fallback, alt_origem_uf_fallback
-        )
-        alt_destino_cidade, alt_destino_uf = _split_cidade_uf(
-            alt_destino_str, alt_destino_cidade_fallback, alt_destino_uf_fallback
-        )
-
-        alt_produto = alt.get("produto") or produto
-        alt_refinaria = (
-            alt.get("refinariaNome")
-            or alt.get("refinaria")
-            or ""
-        )
-        alt_impacto_frete = alt.get("impactoFretePercentual")
-        alt_distancia_km_val = alt.get("distanciaKm") or 0
-        alt_situacao_fiscal = alt.get("situacaoFiscal") or situacao_fiscal
-        alt_risco_fiscal = alt.get("riscoFiscal") or risco_fiscal
-        alt_uso_saldo = alt.get("usoSaldoCredor") or uso_saldo
-
-        alternativos_detalhados.append(
-            {
-                "opcao_label": f"Opção {idx}",
-                "laudo_texto": alt.get("laudo") or laudo_texto,
-                "motivo": alt.get("motivo") or motivo,
-                "quantidade": alt_quantidade,
-                "preco_final": _fmt_moeda(alt_preco_final),
-                "preco_net": _fmt_moeda(alt_preco_net),
-                "frete": _fmt_moeda(alt_frete),
-                "impostos": _fmt_moeda(alt_impostos),
-                "valor_total": _fmt_moeda(alt_valor_total),
-                "origem_cidade": alt_origem_cidade,
-                "origem_uf": alt_origem_uf,
-                "destino_cidade": alt_destino_cidade,
-                "destino_uf": alt_destino_uf,
-                "produto": alt_produto,
-                "refinaria": alt_refinaria,
-                "impacto_frete": _fmt_percent(alt_impacto_frete),
-                "distancia_km": _fmt_km(alt_distancia_km_val),
-                "situacao_fiscal": alt_situacao_fiscal,
-                "risco_fiscal": alt_risco_fiscal,
-                "uso_saldo": alt_uso_saldo,
-            }
-        )
-
+    # Alíquotas
     aliquotas: List[Dict[str, str]] = []
     if icms_aliq is not None:
         aliquotas.append(
@@ -303,11 +250,51 @@ def _montar_contexto_laudo(
             }
         )
 
+    # NOVO: Detalhes das 3 melhores alternativas (caso NÃO seja TabelaV)
+    alternativos_detalhados: List[Dict[str, Any]] = []
+    # Pegamos até 3 cenários alternativos
+    for idx, alt in enumerate(cenarios_alternativos[:3], start=2):
+        alt_quantidade = alt.get("quantidade") or quantidade
+        alt_preco_final = alt.get("precoFinal") or 0
+        alt_preco_net = alt.get("precoNet") or 0
+        alt_frete = alt.get("frete") or 0
+        alt_impostos = alt.get("impostos") or 0
+        alt_valor_total = alt.get("valorTotal") or 0
+
+        alt_origem_str = alt.get("origem") or ""
+        alt_destino_str = alt.get("destino") or ""
+        alt_origem_cidade, alt_origem_uf = _split_cidade_uf(alt_origem_str)
+        alt_destino_cidade, alt_destino_uf = _split_cidade_uf(alt_destino_str)
+
+        alternativos_detalhados.append({
+            "opcao_label": f"Opção {idx}",
+            "laudo_texto": alt.get("laudo") or "",
+            "motivo": alt.get("motivo") or "",
+            "quantidade": alt_quantidade,
+            "preco_final": _fmt_moeda(alt_preco_final),
+            "preco_net": _fmt_moeda(alt_preco_net),
+            "frete": _fmt_moeda(alt_frete),
+            "impostos": _fmt_moeda(alt_impostos),
+            "valor_total": _fmt_moeda(alt_valor_total),
+            "origem_cidade": alt_origem_cidade,
+            "origem_uf": alt_origem_uf,
+            "destino_cidade": alt_destino_cidade,
+            "destino_uf": alt_destino_uf,
+            "produto": alt.get("produto") or produto,
+            "refinaria": alt.get("refinariaNome") or alt.get("refinaria") or "",
+            "impacto_frete": _fmt_percent(alt.get("impactoFretePercentual")),
+            "distancia_km": _fmt_km(alt.get("distanciaKm", 0)),
+            "situacao_fiscal": alt.get("situacaoFiscal") or situacao_fiscal,
+            "risco_fiscal": alt.get("riscoFiscal") or risco_fiscal,
+            "uso_saldo": alt.get("usoSaldoCredor") or uso_saldo,
+        })
+
     return {
         # Cabeçalho
         "laudo_texto": laudo_texto,
         "motivo": motivo,
         "quantidade": quantidade,
+        "exibir_tabela_v": exibir_tabela_v,
 
         # Resumo financeiro (opção vencedora)
         "preco_final": _fmt_moeda(preco_final),
@@ -335,8 +322,20 @@ def _montar_contexto_laudo(
         # Comparativo de cenários (linha simples)
         "alternativos": alternativos_fmt,
 
-        # NOVO: detalhes completos das opções alternativas
+        # NOVO: Detalhamento dos top 3 (se não for TabelaV)
         "alternativos_detalhados": alternativos_detalhados,
+
+        # Dados brutos para o motor JS (sem formatação)
+        "raw": {
+            "valor_net_refinaria": preco_net,
+            "quantidade": quantidade,
+            "aliq_pis_cofins_entrada": 9.25,
+            "aliq_icms_entrada": icms_aliq if icms_aliq is not None else 12.00,
+            "vlr_frete_unitario": frete,
+            "aliq_icms_saida": icms_aliq if icms_aliq is not None else 12.00,
+            "aliq_pis_saida": 1.65,
+            "aliq_cofins_saida": 7.60,
+        },
 
         # Rodapé
         "data_referencia": datetime.now().strftime("%d/%m/%Y"),

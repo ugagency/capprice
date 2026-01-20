@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -233,7 +234,8 @@
             font-size: 12px;
         }
 
-        th, td {
+        th,
+        td {
             text-align: left;
             padding: 6px 8px;
             border-bottom: 1px solid var(--border-color);
@@ -251,6 +253,7 @@
             background-color: #ecfdf3;
             font-weight: 500;
         }
+
 
         /* Footer */
         .footer {
@@ -283,320 +286,599 @@
         }
 
         @media print {
-            .print-btn { display: none; }
-            body { background-color: #ffffff; padding: 0; }
-            .container { box-shadow: none; border-radius: 0; }
+            .print-btn {
+                display: none;
+            }
+
+            body {
+                background-color: #ffffff;
+                padding: 0;
+            }
+
+            .container {
+                box-shadow: none;
+                border-radius: 0;
+            }
         }
     </style>
 </head>
+
 <body>
 
-<div class="container">
-    <div class="header">
-        <div>
-            <h1 class="header-title">Laudo de Precificação</h1>
-            <div class="header-subtitle">Plataforma CAP Price</div>
+    <div class="container">
+        <div class="header">
+            <div>
+                <h1 class="header-title">Laudo de Precificação</h1>
+                <div class="header-subtitle">Plataforma CAP Price</div>
+            </div>
+            <div class="status-badge">
+                Execução: {{ status_execucao or 'NÃO INFORMADO' }}
+            </div>
         </div>
-        <div class="status-badge">
-            Execução: {{ status_execucao or 'NÃO INFORMADO' }}
-        </div>
-    </div>
 
-    <div class="content">
-        <!-- Resumo do Laudo (Opção vencedora) -->
-        <div class="laudo-summary">
-            <h3>🏁 Resultado da Análise</h3>
-            {% if laudo_texto %}
+        <div class="content">
+            <!-- Resumo do Laudo (Opção vencedora) -->
+            <div class="laudo-summary">
+                <h3>🏁 Resultado da Análise</h3>
+                {% if laudo_texto %}
                 <p><strong>Laudo:</strong> {{ laudo_texto }}</p>
-            {% endif %}
-            {% if motivo %}
+                {% endif %}
+                {% if motivo %}
                 <p><strong>Motivo:</strong> {{ motivo }}</p>
-            {% endif %}
-            <p class="sub-label">
-                {{ produto }} • {{ origem_cidade }}/{{ origem_uf }} → {{ destino_cidade }}/{{ destino_uf }} •
-                Quantidade: {{ quantidade }}
-            </p>
-        </div>
-
-        <!-- Resumo Financeiro + Dados Logísticos (Opção vencedora) -->
-        <div class="grid-2">
-            <!-- Card Financeiro -->
-            <div class="card">
-                <div class="card-header">
-                    <span class="icon">💰</span>
-                    <span>Resumo Financeiro (Opção 1 - Vencedora)</span>
-                </div>
-
-                <div class="center" style="margin-bottom: 8px;">
-                    <div class="sub-label">Preço Final Unitário</div>
-                    <div class="big-number">{{ preco_final }}</div>
-                </div>
-
-                <ul class="info-list">
-                    <li>
-                        <span class="label">Preço Net:</span>
-                        <span class="value">{{ preco_net }}</span>
-                    </li>
-                    <li>
-                        <span class="label">Frete Unitário:</span>
-                        <span class="value">{{ frete }}</span>
-                    </li>
-                    <li>
-                        <span class="label">Impostos:</span>
-                        <span class="value">{{ impostos }}</span>
-                    </li>
-                    <li class="info-highlight">
-                        <span class="label">Valor Total ({{ quantidade }} un):</span>
-                        <span class="value">{{ valor_total }}</span>
-                    </li>
-                </ul>
+                {% endif %}
+                <p class="sub-label">
+                    {{ produto }} • {{ origem_cidade }}/{{ origem_uf }} → {{ destino_cidade }}/{{ destino_uf }} •
+                    Quantidade: {{ quantidade }}
+                </p>
             </div>
 
-            <!-- Card Logístico -->
-            <div class="card">
-                <div class="card-header">
-                    <span class="icon">🚛</span>
-                    <span>Dados Logísticos (Opção 1 - Vencedora)</span>
-                </div>
-
-                <div class="route">
-                    <div class="route-point">
-                        <strong>{{ origem_cidade }}</strong><br>
-                        {{ origem_uf }}
+            <!-- Resumo Financeiro + Dados Logísticos (Opção vencedora) -->
+            <div class="grid-2">
+                <!-- Card Financeiro -->
+                <div class="card">
+                    <div class="card-header">
+                        <span class="icon">💰</span>
+                        <span>Resumo Financeiro (Opção 1 - Vencedora)</span>
                     </div>
-                    <div class="route-arrow">
-                        ➜
-                        <span class="route-dist">{{ distancia_km }}</span>
+
+                    <div class="center" style="margin-bottom: 8px;">
+                        <div class="sub-label">Preço Final Unitário</div>
+                        <div class="big-number">{{ preco_final }}</div>
                     </div>
-                    <div class="route-point">
-                        <strong>{{ destino_cidade }}</strong><br>
-                        {{ destino_uf }}
-                    </div>
-                </div>
 
-                <ul class="info-list">
-                    <li>
-                        <span class="label">Produto:</span>
-                        <span class="value">{{ produto }}</span>
-                    </li>
-                    <li>
-                        <span class="label">Refinaria:</span>
-                        <span class="value">{{ refinaria }}</span>
-                    </li>
-                    <li>
-                        <span class="label">Impacto do Frete:</span>
-                        <span class="value" style="color: var(--danger-color);">
-                            {{ impacto_frete }}
-                        </span>
-                    </li>
-                </ul>
-            </div>
-        </div>
-
-        <!-- Inteligência Fiscal (Opção vencedora) -->
-        <div class="card" style="margin-bottom: 12px;">
-            <div class="card-header">
-                <span class="icon">⚖️</span>
-                <span>Inteligência Fiscal (Opção 1 - Vencedora)</span>
-            </div>
-
-            <div class="grid-2" style="gap: 14px; margin-bottom: 0;">
-                <div>
                     <ul class="info-list">
                         <li>
-                            <span class="label">Situação Fiscal:</span>
-                            <span class="value">{{ situacao_fiscal }}</span>
+                            <span class="label">Preço Net:</span>
+                            <span class="value">{{ preco_net }}</span>
                         </li>
                         <li>
-                            <span class="label">Risco:</span>
-                            <span class="value">{{ risco_fiscal }}</span>
+                            <span class="label">Frete Unitário:</span>
+                            <span class="value">{{ frete }}</span>
                         </li>
                         <li>
-                            <span class="label">Uso de Saldo:</span>
-                            <span class="value">{{ uso_saldo }}</span>
+                            <span class="label">Impostos:</span>
+                            <span class="value">{{ impostos }}</span>
+                        </li>
+                        <li class="info-highlight">
+                            <span class="label">Valor Total ({{ quantidade }} un):</span>
+                            <span class="value">{{ valor_total }}</span>
                         </li>
                     </ul>
                 </div>
-                <div>
-                    <div class="sub-label" style="margin-bottom: 4px;">
-                        Alíquotas Aplicadas
+
+                <!-- Card Logístico -->
+                <div class="card">
+                    <div class="card-header">
+                        <span class="icon">🚛</span>
+                        <span>Dados Logísticos (Opção 1 - Vencedora)</span>
                     </div>
-                    {% if aliquotas and aliquotas|length > 0 %}
+
+                    <div class="route">
+                        <div class="route-point">
+                            <strong>{{ origem_cidade }}</strong><br>
+                            {{ origem_uf }}
+                        </div>
+                        <div class="route-arrow">
+                            ➜
+                            <span class="route-dist">{{ distancia_km }}</span>
+                        </div>
+                        <div class="route-point">
+                            <strong>{{ destino_cidade }}</strong><br>
+                            {{ destino_uf }}
+                        </div>
+                    </div>
+
+                    <ul class="info-list">
+                        <li>
+                            <span class="label">Produto:</span>
+                            <span class="value">{{ produto }}</span>
+                        </li>
+                        <li>
+                            <span class="label">Refinaria:</span>
+                            <span class="value">{{ refinaria }}</span>
+                        </li>
+                        <li>
+                            <span class="label">Impacto do Frete:</span>
+                            <span class="value" style="color: var(--danger-color);">
+                                {{ impacto_frete }}
+                            </span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Inteligência Fiscal (Opção vencedora) -->
+            <div class="card" style="margin-bottom: 12px;">
+                <div class="card-header">
+                    <span class="icon">⚖️</span>
+                    <span>Inteligência Fiscal (Opção 1 - Vencedora)</span>
+                </div>
+
+                <div class="grid-2" style="gap: 14px; margin-bottom: 0;">
+                    <div>
+                        <ul class="info-list">
+                            <li>
+                                <span class="label">Situação Fiscal:</span>
+                                <span class="value">{{ situacao_fiscal }}</span>
+                            </li>
+                            <li>
+                                <span class="label">Risco:</span>
+                                <span class="value">{{ risco_fiscal }}</span>
+                            </li>
+                            <li>
+                                <span class="label">Uso de Saldo:</span>
+                                <span class="value">{{ uso_saldo }}</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div>
+                        <div class="sub-label" style="margin-bottom: 4px;">
+                            Alíquotas Aplicadas
+                        </div>
+                        {% if aliquotas and aliquotas|length > 0 %}
                         <div style="display: flex; flex-wrap: wrap; gap: 4px;">
                             {% for a in aliquotas %}
-                                <span style="
+                            <span style="
                                     background: #f3f4f6;
                                     padding: 3px 8px;
                                     border-radius: 999px;
                                     font-size: 11px;
                                 ">
-                                    {{ a.label }}: {{ a.aliquota }} ({{ a.valor }})
-                                </span>
+                                {{ a.label }}: {{ a.aliquota }} ({{ a.valor }})
+                            </span>
                             {% endfor %}
                         </div>
-                    {% else %}
+                        {% else %}
                         <span class="sub-label">Sem detalhamento de alíquotas informado.</span>
-                    {% endif %}
+                        {% endif %}
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- NOVO: Detalhamento das Opções Alternativas -->
-        {% if alternativos_detalhados and alternativos_detalhados|length > 0 %}
-        <div class="card" style="margin-bottom: 12px;">
-            <div class="card-header">
-                <span class="icon">📊</span>
-                <span>Detalhamento dos Cenários Alternativos</span>
-            </div>
-
-            {% for alt in alternativos_detalhados %}
-            <div class="card" style="margin-bottom: 10px; border-color: var(--border-color);">
+            <!-- Alternância Condicional: TabelaV vs 3 Melhores Opções -->
+            {% if exibir_tabela_v %}
+            <!-- Pricing - Teste CAP Price (Planilha Interativa) -->
+            <div class="card" style="margin-top: 12px;">
                 <div class="card-header">
-                    <span class="icon">⭐</span>
-                    <span>{{ alt.opcao_label }} - {{ alt.refinaria }}</span>
+                    <span class="icon">📊</span>
+                    <span>Pricing - Teste CAP Price (Interativo)</span>
                 </div>
 
-                <div class="grid-2">
-                    <!-- Bloco financeiro -->
-                    <div>
-                        <div class="center" style="margin-bottom: 8px;">
-                            <div class="sub-label">Preço Final Unitário</div>
-                            <div class="big-number">{{ alt.preco_final }}</div>
-                        </div>
+                <style>
+                    .spreadsheet-table {
+                        width: 100%;
+                        border-collapse: collapse;
+                        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                        font-size: 11px;
+                        margin: 10px 0;
+                    }
 
-                        <ul class="info-list">
-                            <li>
-                                <span class="label">Preço Net:</span>
-                                <span class="value">{{ alt.preco_net }}</span>
-                            </li>
-                            <li>
-                                <span class="label">Frete Unitário:</span>
-                                <span class="value">{{ alt.frete }}</span>
-                            </li>
-                            <li>
-                                <span class="label">Impostos:</span>
-                                <span class="value">{{ alt.impostos }}</span>
-                            </li>
-                            <li class="info-highlight">
-                                <span class="label">Valor Total ({{ alt.quantidade }} un):</span>
-                                <span class="value">{{ alt.valor_total }}</span>
-                            </li>
-                        </ul>
-                    </div>
+                    .spreadsheet-table th,
+                    .spreadsheet-table td {
+                        border: 1px solid #ccc;
+                        padding: 4px 8px;
+                    }
 
-                    <!-- Bloco logístico -->
-                    <div>
-                        <div class="route">
-                            <div class="route-point">
-                                <strong>{{ alt.origem_cidade }}</strong><br>
-                                {{ alt.origem_uf }}
-                            </div>
-                            <div class="route-arrow">
-                                ➜
-                                <span class="route-dist">{{ alt.distancia_km }}</span>
-                            </div>
-                            <div class="route-point">
-                                <strong>{{ alt.destino_cidade }}</strong><br>
-                                {{ alt.destino_uf }}
-                            </div>
-                        </div>
+                    .section-header {
+                        font-weight: bold;
+                        text-transform: uppercase;
+                        color: white;
+                        width: 120px;
+                    }
 
-                        <ul class="info-list">
-                            <li>
-                                <span class="label">Produto:</span>
-                                <span class="value">{{ alt.produto }}</span>
-                            </li>
-                            <li>
-                                <span class="label">Refinaria:</span>
-                                <span class="value">{{ alt.refinaria }}</span>
-                            </li>
-                            <li>
-                                <span class="label">Impacto do Frete:</span>
-                                <span class="value" style="color: var(--danger-color);">
-                                    {{ alt.impacto_frete }}
-                                </span>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
+                    .bg-blue {
+                        background-color: #d9eaf7;
+                        color: #333;
+                    }
 
-                {% if alt.laudo_texto or alt.motivo %}
-                <div class="laudo-summary" style="margin-top: 10px;">
-                    {% if alt.laudo_texto %}
-                    <p><strong>Laudo:</strong> {{ alt.laudo_texto }}</p>
-                    {% endif %}
-                    {% if alt.motivo %}
-                    <p><strong>Motivo:</strong> {{ alt.motivo }}</p>
-                    {% endif %}
-                    <p class="sub-label">
-                        Situação fiscal: {{ alt.situacao_fiscal }} • Risco: {{ alt.risco_fiscal }} • Uso de saldo credor: {{ alt.uso_saldo }}
-                    </p>
-                </div>
-                {% endif %}
+                    .bg-brown {
+                        background-color: #4b2c20;
+                        color: white;
+                    }
+
+                    .bg-dark-blue {
+                        background-color: #003366;
+                        color: white;
+                    }
+
+                    .bg-red {
+                        background-color: #800000;
+                        color: white;
+                    }
+
+                    .bg-gray {
+                        background-color: #f2f2f2;
+                    }
+
+                    .spreadsheet-table input {
+                        width: 100%;
+                        border: 1px solid transparent;
+                        background: transparent;
+                        text-align: right;
+                        font-family: inherit;
+                        font-size: inherit;
+                        padding: 0;
+                        margin: 0;
+                    }
+
+                    .spreadsheet-table input:focus {
+                        background: white;
+                        border-color: #0f766e;
+                        outline: none;
+                    }
+
+                    .col-label {
+                        text-align: left;
+                    }
+
+                    .col-value {
+                        text-align: right;
+                        width: 150px;
+                    }
+
+                    .indent-1 {
+                        padding-left: 20px !important;
+                    }
+
+                    @media print {
+                        .spreadsheet-table input {
+                            border: none !important;
+                        }
+                    }
+                </style>
+
+                <table class="spreadsheet-table">
+                    <!-- PRODUTO -->
+                    <tr>
+                        <td rowspan="9" class="section-header bg-dark-blue">PRODUTO</td>
+                        <td class="col-label bg-blue">Preço net refinaria por tonelada</td>
+                        <td class="col-value bg-blue">
+                            <input type="number" id="input-net-unit" value="{{ raw.valor_net_refinaria }}" step="0.01">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-label bg-blue">Toneladas</td>
+                        <td class="col-value bg-blue">
+                            <input type="number" id="input-qtd" value="{{ raw.quantidade }}" step="0.01">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-label bg-red indent-1">Preço net refinaria total</td>
+                        <td class="col-value bg-red" id="val-net-total">R$ 0,00</td>
+                    </tr>
+                    <tr>
+                        <td class="col-label bg-red indent-1">Alíquotas de PIS e Cofins aplicáveis</td>
+                        <td class="col-value bg-red">9,25%</td>
+                    </tr>
+                    <tr>
+                        <td class="col-label indent-1">Alíquota de ICMS aplicável</td>
+                        <td class="col-value">
+                            <input type="number" id="input-aliq-icms-ent" value="{{ raw.aliq_icms_entrada }}"
+                                step="0.01">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-label bg-red indent-1">Base de cálculo de PIS e Cofins</td>
+                        <td class="col-value bg-red" id="val-base-entrada">R$ 0,00</td>
+                    </tr>
+                    <tr>
+                        <td class="col-label bg-red indent-1">Base de cálculo do ICMS</td>
+                        <td class="col-value bg-red" id="val-base-icms-ent">R$ 0,00</td>
+                    </tr>
+                    <tr>
+                        <td class="col-label indent-1">Valor de PIS e Cofins</td>
+                        <td class="col-value" id="val-pis-cofins-ent">R$ 0,00</td>
+                    </tr>
+                    <tr>
+                        <td class="col-label indent-1">Valor do ICMS</td>
+                        <td class="col-value" id="val-icms-ent">R$ 0,00</td>
+                    </tr>
+
+                    <!-- FRETE -->
+                    <tr>
+                        <td rowspan="2" class="section-header bg-brown">FRETE</td>
+                        <td class="col-label bg-blue">Preço cheio por tonelada</td>
+                        <td class="col-value bg-blue">
+                            <input type="number" id="input-frete-unit" value="{{ raw.vlr_frete_unitario }}" step="0.01">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-label bg-red indent-1">Preço cheio total</td>
+                        <td class="col-value bg-red" id="val-frete-total">R$ 0,00</td>
+                    </tr>
+
+                    <!-- CRÉDITOS -->
+                    <tr>
+                        <td rowspan="6" class="section-header bg-gray" style="color:#333;">CRÉDITOS E AJUSTES</td>
+                        <td class="col-label indent-1">Produto: créditos ICMS</td>
+                        <td class="col-value" id="val-cred-icms-prod">R$ 0,00</td>
+                    </tr>
+                    <tr>
+                        <td class="col-label indent-1">Produto: créditos PIS e Cofins</td>
+                        <td class="col-value" id="val-cred-pis-prod">R$ 0,00</td>
+                    </tr>
+                    <tr>
+                        <td class="col-label indent-1">Frete: créditos ICMS</td>
+                        <td class="col-value" id="val-cred-icms-frete">R$ 0,00</td>
+                    </tr>
+                    <tr>
+                        <td class="col-label indent-1">Frete: créditos PIS e Cofins</td>
+                        <td class="col-value" id="val-cred-pis-frete">R$ 0,00</td>
+                    </tr>
+                    <tr>
+                        <td class="col-label bg-red indent-1">Preço net total ajustado</td>
+                        <td class="col-value bg-red" id="val-net-ajustado">R$ 0,00</td>
+                    </tr>
+                    <tr>
+                        <td class="col-label bg-red indent-1">Preço net por tonelada ajustado</td>
+                        <td class="col-value bg-red" id="val-net-ton-ajustado">R$ 0,00</td>
+                    </tr>
+
+                    <!-- COMPOSIÇÃO -->
+                    <tr>
+                        <td rowspan="5" class="section-header bg-dark-blue">COMPOSIÇÃO</td>
+                        <td class="col-label indent-1">Margem de lucro bruto sobre o custo</td>
+                        <td class="col-value">
+                            <input type="number" id="input-margem" value="5" step="0.01">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-label bg-red indent-1">Lucro bruto</td>
+                        <td class="col-value bg-red" id="val-lucro-bruto">R$ 0,00</td>
+                    </tr>
+                    <tr>
+                        <td class="col-label bg-dark-blue indent-1">Preço líquido de tributos</td>
+                        <td class="col-value bg-dark-blue" id="val-preco-liquido">R$ 0,00</td>
+                    </tr>
+                    <tr>
+                        <td class="col-label indent-1">Frete CIF (Opcional)</td>
+                        <td class="col-value">
+                            <input type="number" id="input-frete-cif" value="0" step="0.01">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-label bg-red indent-1">Preço líquido com frete CIF</td>
+                        <td class="col-value bg-red" id="val-preco-liq-cif">R$ 0,00</td>
+                    </tr>
+
+                    <!-- TRIBUTOS VENDAS -->
+                    <tr>
+                        <td rowspan="8" class="section-header bg-blue">TRIBUTOS VENDAS</td>
+                        <td class="col-label indent-1">Alíquota ICMS (Saída)</td>
+                        <td class="col-value">
+                            <input type="number" id="input-aliq-icms-saida" value="{{ raw.aliq_icms_saida }}"
+                                step="0.01">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-label indent-1">Alíquota PIS</td>
+                        <td class="col-value">1,65%</td>
+                    </tr>
+                    <tr>
+                        <td class="col-label indent-1">Alíquota Cofins</td>
+                        <td class="col-value">7,60%</td>
+                    </tr>
+                    <tr>
+                        <td class="col-label bg-red indent-1">Base de cálculo ICMS / IPI</td>
+                        <td class="col-value bg-red" id="val-base-saida">R$ 0,00</td>
+                    </tr>
+                    <tr>
+                        <td class="col-label bg-red indent-1">Base de cálculo PIS e Cofins</td>
+                        <td class="col-value bg-red" id="val-base-pis-saida">R$ 0,00</td>
+                    </tr>
+                    <tr>
+                        <td class="col-label bg-red indent-1">ICMS</td>
+                        <td class="col-value bg-red" id="val-icms-saida">R$ 0,00</td>
+                    </tr>
+                    <tr>
+                        <td class="col-label bg-red indent-1">PIS</td>
+                        <td class="col-value bg-red" id="val-pis-saida">R$ 0,00</td>
+                    </tr>
+                    <tr>
+                        <td class="col-label bg-red indent-1">Cofins</td>
+                        <td class="col-value bg-red" id="val-cofins-saida">R$ 0,00</td>
+                    </tr>
+
+                    <!-- FINAL -->
+                    <tr>
+                        <td class="section-header bg-brown">PREÇO FINAL</td>
+                        <td class="col-label bg-red">Valor total dos produtos</td>
+                        <td class="col-value bg-red" id="val-total-final">R$ 0,00</td>
+                    </tr>
+                </table>
+
+                <script>
+                    (function () {
+                        const fmt = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+
+                        function update() {
+                            // Inputs
+                            const netUnit = parseFloat(document.getElementById('input-net-unit').value) || 0;
+                            const qtd = parseFloat(document.getElementById('input-qtd').value) || 0;
+                            const aliqIcmsEnt = (parseFloat(document.getElementById('input-aliq-icms-ent').value) || 0) / 100;
+                            const aliqPisCofinsEnt = 0.0925;
+                            const freteUnit = parseFloat(document.getElementById('input-frete-unit').value) || 0;
+                            const margem = (parseFloat(document.getElementById('input-margem').value) || 0) / 100;
+                            const freteCif = parseFloat(document.getElementById('input-frete-cif').value) || 0;
+                            const aliqIcmsSaida = (parseFloat(document.getElementById('input-aliq-icms-saida').value) || 0) / 100;
+                            const aliqPisSaida = 0.0165;
+                            const aliqCofinsSaida = 0.0760;
+
+                            // 1. Produto
+                            const netTotal = netUnit * qtd;
+                            const baseEntrada = netTotal / (1 - aliqPisCofinsEnt - aliqIcmsEnt);
+                            const pisCofinsEnt = baseEntrada * aliqPisCofinsEnt;
+                            const icmsEnt = baseEntrada * aliqIcmsEnt;
+
+                            document.getElementById('val-net-total').innerText = fmt.format(netTotal);
+                            document.getElementById('val-base-entrada').innerText = fmt.format(baseEntrada);
+                            document.getElementById('val-base-icms-ent').innerText = fmt.format(baseEntrada);
+                            document.getElementById('val-pis-cofins-ent').innerText = fmt.format(pisCofinsEnt);
+                            document.getElementById('val-icms-ent').innerText = fmt.format(icmsEnt);
+
+                            // 2. Frete
+                            const freteTotal = freteUnit * qtd;
+                            document.getElementById('val-frete-total').innerText = fmt.format(freteTotal);
+
+                            // 3. Créditos
+                            const credIcmsFrete = freteTotal * 0.12; // Baseado no Excel (R$ 324 p/ 2700)
+                            const credPisFrete = freteTotal * 0.0925; // Baseado no Excel
+                            const netTotalAjustado = (baseEntrada + freteTotal) - (icmsEnt + pisCofinsEnt + credIcmsFrete + credPisFrete);
+                            const netTonAjustado = netTotalAjustado / (qtd || 1);
+
+                            document.getElementById('val-cred-icms-prod').innerText = fmt.format(icmsEnt);
+                            document.getElementById('val-cred-pis-prod').innerText = fmt.format(pisCofinsEnt);
+                            document.getElementById('val-cred-icms-frete').innerText = fmt.format(credIcmsFrete);
+                            document.getElementById('val-cred-pis-frete').innerText = fmt.format(credPisFrete);
+                            document.getElementById('val-net-ajustado').innerText = fmt.format(netTotalAjustado);
+                            document.getElementById('val-net-ton-ajustado').innerText = fmt.format(netTonAjustado);
+
+                            // 4. Composição
+                            const lucroBruto = netTotalAjustado * margem;
+                            const precoLiquido = netTotalAjustado + lucroBruto;
+                            const precoLiqCif = precoLiquido + freteCif;
+
+                            document.getElementById('val-lucro-bruto').innerText = fmt.format(lucroBruto);
+                            document.getElementById('val-preco-liquido').innerText = fmt.format(precoLiquido);
+                            document.getElementById('val-preco-liq-cif').innerText = fmt.format(precoLiqCif);
+
+                            // 5. Tributos Vendas
+                            const baseSaida = precoLiqCif / (1 - aliqIcmsSaida - aliqPisSaida - aliqCofinsSaida);
+                            const icmsSaida = baseSaida * aliqIcmsSaida;
+                            const pisSaida = baseSaida * aliqPisSaida;
+                            const cofinsSaida = baseSaida * aliqCofinsSaida;
+
+                            document.getElementById('val-base-saida').innerText = fmt.format(baseSaida);
+                            document.getElementById('val-base-pis-saida').innerText = fmt.format(baseSaida); // Simplificado
+                            document.getElementById('val-icms-saida').innerText = fmt.format(icmsSaida);
+                            document.getElementById('val-pis-saida').innerText = fmt.format(pisSaida);
+                            document.getElementById('val-cofins-saida').innerText = fmt.format(cofinsSaida);
+
+                            // Final
+                            document.getElementById('val-total-final').innerText = fmt.format(baseSaida);
+                        }
+
+                        // Attach listeners
+                        const inputs = document.querySelectorAll('.spreadsheet-table input');
+                        inputs.forEach(input => input.addEventListener('input', update));
+
+                        // Initial run
+                        update();
+                    })();
+                </script>
             </div>
-            {% endfor %}
-        </div>
-        {% endif %}
-
-        <!-- Comparativo de Cenários (tabela simples) -->
-        <div class="card">
-            <div class="card-header">
-                <span class="icon">🔄</span>
-                <span>Comparativo de Cenários (Top 3 opções)</span>
-            </div>
-
-            {% if alternativos and alternativos|length > 0 %}
-                <div style="overflow-x: auto;">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Refinaria</th>
-                                <th>Distância</th>
-                                <th>Frete (R$)</th>
-                                <th>Preço Final (R$)</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Cenário principal como vencedor -->
-                            <tr class="winner-row">
-                                <td>{{ refinaria }}</td>
-                                <td>{{ distancia_km }}</td>
-                                <td>{{ frete }}</td>
-                                <td>{{ preco_final }}</td>
-                                <td>✅ Vencedor</td>
-                            </tr>
-                            <!-- Demais cenários como alternativos -->
-                            {% for alt in alternativos %}
-                                <tr>
-                                    <td>{{ alt.refinaria }}</td>
-                                    <td>{{ alt.distancia_km }}</td>
-                                    <td>{{ alt.frete }}</td>
-                                    <td>{{ alt.preco_final }}</td>
-                                    <td>❌ Alternativo</td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
             {% else %}
-                <p class="sub-label" style="margin: 4px 0 0 0;">
-                    Não há cenários alternativos informados para comparação.
-                </p>
+            <!-- Detalhamento dos top 3 melhore cenários (Melhor Opção já está no topo) -->
+            {% if alternativos_detalhados and alternativos_detalhados|length > 0 %}
+            <div class="card" style="margin-top: 12px;">
+                <div class="card-header">
+                    <span class="icon">📊</span>
+                    <span>Outras Melhores Opções para Comparação</span>
+                </div>
+
+                {% for alt in alternativos_detalhados %}
+                <div class="card" style="margin-bottom: 10px; border-color: var(--border-color); background: #fafafa;">
+                    <div class="card-header" style="background: #f1f1f1; font-size: 13px;">
+                        <span class="icon">⭐</span>
+                        <span>{{ alt.opcao_label }} - {{ alt.refinaria }}</span>
+                    </div>
+
+                    <div class="grid-2" style="padding: 10px;">
+                        <!-- Bloco financeiro -->
+                        <div>
+                            <div class="center" style="margin-bottom: 8px;">
+                                <div class="sub-label" style="font-size: 10px;">Preço Final Unitário</div>
+                                <div class="big-number" style="font-size: 20px;">{{ alt.preco_final }}</div>
+                            </div>
+
+                            <ul class="info-list">
+                                <li>
+                                    <span class="label">Preço Net:</span>
+                                    <span class="value">{{ alt.preco_net }}</span>
+                                </li>
+                                <li>
+                                    <span class="label">Frete:</span>
+                                    <span class="value">{{ alt.frete }}</span>
+                                </li>
+                                <li>
+                                    <span class="label">Impostos:</span>
+                                    <span class="value">{{ alt.impostos }}</span>
+                                </li>
+                                <li class="info-highlight" style="font-size: 11px;">
+                                    <span class="label">Valor Total ({{ alt.quantidade }} un):</span>
+                                    <span class="value">{{ alt.valor_total }}</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- Bloco logístico -->
+                        <div>
+                            <div class="route" style="margin-top: 5px; background: white; border: 1px solid #eee;">
+                                <div class="route-point">
+                                    <strong>{{ alt.origem_cidade }}</strong><br>
+                                    {{ alt.origem_uf }}
+                                </div>
+                                <div class="route-arrow">
+                                    ➜
+                                    <span class="route-dist">{{ alt.distancia_km }}</span>
+                                </div>
+                                <div class="route-point">
+                                    <strong>{{ alt.destino_cidade }}</strong><br>
+                                    {{ alt.destino_uf }}
+                                </div>
+                            </div>
+
+                            <ul class="info-list" style="margin-top: 10px;">
+                                <li>
+                                    <span class="label">Impacto Frete:</span>
+                                    <span class="value" style="color: var(--danger-color);">{{ alt.impacto_frete
+                                        }}</span>
+                                </li>
+                                <li>
+                                    <span class="label">Situação Fiscal:</span>
+                                    <span class="value">{{ alt.situacao_fiscal }}</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
             {% endif %}
+            {% endif %}
+
+            <!-- Botão de impressão -->
+            <div class="actions">
+                <button class="print-btn" onclick="window.print()">Imprimir Laudo / Salvar PDF</button>
+            </div>
         </div>
 
-        <!-- Botão de impressão -->
-        <div class="actions">
-            <button class="print-btn" onclick="window.print()">Imprimir Laudo / Salvar PDF</button>
+        <div class="footer">
+            Gerado automaticamente pela plataforma CAP Price.
+            Data de referência: {{ data_referencia or '—' }}.
         </div>
     </div>
-
-    <div class="footer">
-        Gerado automaticamente pela plataforma CAP Price.
-        Data de referência: {{ data_referencia or '—' }}.
-    </div>
-</div>
 
 </body>
+
 </html>
