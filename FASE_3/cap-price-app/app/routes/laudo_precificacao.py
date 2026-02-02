@@ -1,7 +1,8 @@
 from datetime import datetime
+import traceback
 from typing import Any, Dict, List, Tuple, Optional
 
-from flask import render_template
+from flask import render_template, render_template_string
 
 
 def _fmt_moeda(valor: Any) -> str:
@@ -135,6 +136,25 @@ def _split_cidade_uf(
 
 
 
+
+def _deep_search(obj: Any, key: str) -> Any:
+    """Busca recursiva por uma chave em um objeto aninhado (dict/list)."""
+    if isinstance(obj, dict):
+        if key in obj and obj[key] is not None:
+            return obj[key]
+        for v in obj.values():
+            if isinstance(v, (dict, list)):
+                res = _deep_search(v, key)
+                if res is not None:
+                    return res
+    elif isinstance(obj, list):
+        for item in obj:
+            res = _deep_search(item, key)
+            if res is not None:
+                return res
+    return None
+
+
 def _montar_contexto_laudo(
     cenario: Dict,
     cenarios_alternativos: List[Dict],
@@ -143,20 +163,66 @@ def _montar_contexto_laudo(
     """Monta o dicionário de contexto usado pelo template Jinja do laudo."""
 
     # Campos básicos (cenário principal)
-    laudo_texto = cenario.get("laudo") or ""
-    motivo = cenario.get("motivo") or ""
+    # Tenta achar no cenario, ou no objeto 'dados' da raiz (conforme relato do usuário)
+    dados_raiz = raiz.get("dados", {}) if isinstance(raiz, dict) else {}
+    
+    laudo_texto = (
+        cenario.get("laudo") 
+        or cenario.get("diagnostico")
+        or dados_raiz.get("laudo")
+        or dados_raiz.get("diagnostico")
+        or dados_raiz.get("texto")
+        or ""
+    )
+    
+    motivo = (
+        cenario.get("motivo")
+        or dados_raiz.get("motivo")
+        or ""
+    )
 
     quantidade = (
         cenario.get("quantidade")
         or (raiz.get("quantidade") if isinstance(raiz, dict) else 0)
+        or _deep_search(raiz, "quantidade")
         or 0
     )
 
-    preco_final = cenario.get("precoFinal") or 0
-    preco_net = cenario.get("precoNet") or 0
-    frete = cenario.get("frete") or 0
-    impostos = cenario.get("impostos") or 0
-    valor_total = cenario.get("valorTotal") or 0
+    # Helper para buscar valor numérico em cenario ou raiz (recursivo)
+    def _get_val(keys: Any, default=0):
+        if isinstance(keys, str):
+            keys = [keys]
+        for key in keys:
+            val = cenario.get(key)
+            if val is None or val == 0 or val == "":
+                val = _deep_search(raiz, key)
+            if val is not None and val != 0 and val != "":
+                return val
+        return default
+
+    # Preços e Impostos (com fallback deep search e snake_case)
+    preco_net = _get_val(["precoNet", "preco_net", "valor_net", "valor_net_refinaria"])
+    frete = _get_val(["frete", "vlr_frete_unitario", "valor_frete"])
+    impostos = _get_val(["impostos", "valor_impostos"])
+    difal = _get_val(["difal", "valor_difal"])
+    icms_vlr = _get_val(["vlr_icms", "valor_icms", "icms_valor"])
+    pis_vlr = _get_val(["vlr_pis", "valor_pis", "pis_valor"])
+    cofins_vlr = _get_val(["vlr_cofins", "valor_cofins", "cofins_valor"])
+
+    # Se 'impostos' vier zerado, soma os componentes individuais
+    if not impostos:
+        impostos = icms_vlr + pis_vlr + cofins_vlr + difal
+
+    preco_final = _get_val(["precoFinal", "preco_final"])
+    # Se 'precoFinal' vier zerado, tenta montar pelo precoSemImpostos + impostos
+    if not preco_final:
+        preco_sem_impostos = _get_val(["precoSemImpostos", "preco_sem_impostos"])
+        if preco_sem_impostos:
+            preco_final = preco_sem_impostos + impostos
+
+    valor_total = _get_val(["valorTotal", "valor_total"])
+    if not valor_total and preco_final:
+        valor_total = preco_final * quantidade
 
     # Origem / destino
     origem_str = cenario.get("origem") or ""
@@ -189,11 +255,11 @@ def _montar_contexto_laudo(
 
     # Alíquotas
     icms_aliq = cenario.get("icms")
-    icms_vlr = cenario.get("vlr_icms")
+    # icms_vlr já obtido acima
     pis_aliq = cenario.get("pis")
-    pis_vlr = cenario.get("vlr_pis")
+    # pis_vlr já obtido acima
     cofins_aliq = cenario.get("cofins")
-    cofins_vlr = cenario.get("vlr_cofins")
+    # cofins_vlr já obtido acima
 
     # Alternativos formatados para a tabela simples
     alternativos_fmt: List[Dict[str, str]] = []
@@ -213,15 +279,8 @@ def _montar_contexto_laudo(
             }
         )
 
-    # Detecta se deve exibir a tabela interativa (se "TabelaV" estiver no laudo ou motivo)
-    # Broadened search: case-insensitive and checking multiple sources
-    search_str = "tabelav"
-    exibir_tabela_v = (
-        search_str in laudo_texto.lower() or 
-        search_str in motivo.lower() or
-        search_str in str(cenario).lower() or
-        search_str in str(raiz).lower()
-    )
+    # Detecta se deve exibir a tabela interativa (DESATIVADO por solicitação do usuário)
+    exibir_tabela_v = False
 
     # Alíquotas
     aliquotas: List[Dict[str, str]] = []
@@ -289,12 +348,51 @@ def _montar_contexto_laudo(
             "uso_saldo": alt.get("usoSaldoCredor") or uso_saldo,
         })
 
+    # NOVO: Diagnóstico Textual (Relatório derivado da planilha) e Status
+    # O usuário informou que agora vem um texto chamado 'diagnostico' e um texto 'status'.
+    
+    # Extração de Status
+    status_simulacao = cenario.get("status") or raiz.get("status") or "Concluído"
+
+    # Extração de Diagnóstico (Prioriza texto simples conforme solicitado)
+    diag_raw = cenario.get("diagnostico") or raiz.get("diagnostico")
+    
+    # Se ainda tentar vir como JSON string ou objeto, mantemos compatibilidade, 
+    # mas o foco é suportar o texto direto.
+    diagnostico_texto = ""
+    
+    if isinstance(diag_raw, str):
+        # Tenta ver se é JSON apenas se parecer JSON
+        if diag_raw.strip().startswith("{"):
+            try:
+                import json
+                parsed = json.loads(diag_raw)
+                # Se for dict, tenta extrair um resumo ou texto principal
+                if isinstance(parsed, dict):
+                    diagnostico_texto = parsed.get("resumo") or parsed.get("texto") or str(parsed)
+                else:
+                    diagnostico_texto = str(parsed)
+            except:
+                diagnostico_texto = diag_raw
+        else:
+            diagnostico_texto = diag_raw
+    elif isinstance(diag_raw, dict):
+         diagnostico_texto = diag_raw.get("resumo") or str(diag_raw)
+    
+    # Mantemos a variável 'diagnostico' como dict para compatibilidade se necessário,
+    # mas criamos 'diagnostico_texto' para uso direto no template.
+    diagnostico = {"resumo": diagnostico_texto}
+    if not diagnostico.get("resumo") and not any(diagnostico.values()):
+        # Se tudo falhou, tenta usar campos soltos
+        diagnostico["resumo"] = raiz.get("status_execucao") or ""
+
     return {
         # Cabeçalho
         "laudo_texto": laudo_texto,
         "motivo": motivo,
         "quantidade": quantidade,
         "exibir_tabela_v": exibir_tabela_v,
+        "diagnostico": diagnostico,  # <--- Injected diagnostic object
 
         # Resumo financeiro (opção vencedora)
         "preco_final": _fmt_moeda(preco_final),
@@ -324,6 +422,10 @@ def _montar_contexto_laudo(
 
         # NOVO: Detalhamento dos top 3 (se não for TabelaV)
         "alternativos_detalhados": alternativos_detalhados,
+        
+        # Novos campos solicitados
+        "diagnostico_texto": diagnostico_texto,
+        "status_simulacao": status_simulacao,
 
         # Dados brutos para o motor JS (sem formatação)
         "raw": {
@@ -344,12 +446,27 @@ def _montar_contexto_laudo(
 
 def gerar_laudo_para_resposta_simulacao(n8n_json: Any) -> Any:
     """
-    Recebe o JSON bruto do n8n, gera o HTML do laudo e injeta em `htmls`.
-
-    Mantém a estrutura original do JSON, apenas adicionando/atualizando o campo
-    `htmls` no mesmo nível em que estiverem os `jsons`/`cenarios`.
+    Gerador de laudo.
     """
     try:
+        # Desempacota se vier dentro de 'output' (Common in LLM/n8n responses)
+        import json
+        if isinstance(n8n_json, list) and n8n_json:
+            n8n_json = n8n_json[0]
+        
+        if isinstance(n8n_json, dict) and "output" in n8n_json and isinstance(n8n_json["output"], str):
+            text = n8n_json["output"].strip()
+            if text.startswith("```"):
+                lines = text.splitlines()
+                if lines[0].startswith("```"): lines = lines[1:]
+                if lines and lines[-1].startswith("```"): lines = lines[:-1]
+                text = "\n".join(lines).strip()
+            try:
+                decoded = json.loads(text)
+                n8n_json = decoded
+            except:
+                pass
+
         principal, alternativos, owner, raiz = _extrair_cenario_principal(n8n_json)
         if principal is None:
             # Nada para fazer, devolve como veio
@@ -365,7 +482,7 @@ def gerar_laudo_para_resposta_simulacao(n8n_json: Any) -> Any:
             raiz["htmls"] = [laudo_html]
 
         return n8n_json
-    except Exception:
-        # Qualquer erro aqui não pode quebrar a simulação inteira:
-        # devolve o JSON original sem mexer.
+    except Exception as e:
+        print("❌ ERRO NA GERAÇÃO DO LAUDO:")
+        traceback.print_exc()
         return n8n_json

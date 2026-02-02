@@ -18,7 +18,7 @@ main_bp = Blueprint("main", __name__)
 # ============================================================
 N8N_SIMULATOR_WEBHOOK_URL = os.getenv(
     "N8N_SIMULATOR_WEBHOOK_URL",
-    "https://automacoes-n8n.infrassys.com/webhook/CPV5x",
+    "https://automacoes-n8n.infrassys.com/webhook-test/CPV5x",
 )
 
 N8N_CHAT_WEBHOOK_URL = os.getenv(
@@ -65,7 +65,29 @@ def _mapear_resultados_simulacao(n8n_json):
                     return lst, owner
         return None, None
 
-    # ---------- Normaliza raiz ----------
+    def _unwrap_n8n(obj):
+        """Desempacota JSON se estiver dentro de um campo 'output' (comum em IAs/n8n)."""
+        import json
+        if isinstance(obj, list) and obj:
+            obj = obj[0]
+        
+        if isinstance(obj, dict) and "output" in obj and isinstance(obj["output"], str):
+            text = obj["output"].strip()
+            # Remove blocos de código markdown se existirem
+            if text.startswith("```"):
+                lines = text.splitlines()
+                if lines[0].startswith("```"): lines = lines[1:]
+                if lines and lines[-1].startswith("```"): lines = lines[:-1]
+                text = "\n".join(lines).strip()
+            try:
+                decoded = json.loads(text)
+                return decoded
+            except:
+                pass
+        return obj
+
+    # ---------- Normaliza/Desempacota raiz ----------
+    n8n_json = _unwrap_n8n(n8n_json)
     raiz = n8n_json
     if isinstance(raiz, list) and raiz and isinstance(raiz[0], dict):
         raiz = raiz[0]
@@ -132,89 +154,134 @@ def _mapear_resultados_simulacao(n8n_json):
     # ---------- Monta o array no formato que o front espera ----------
     resultados = []
 
+    def _deep_search(obj, key):
+        """Busca recursiva por uma chave em um objeto aninhado."""
+        if isinstance(obj, dict):
+            if key in obj:
+                return obj[key]
+            for v in obj.values():
+                if isinstance(v, (dict, list)):
+                    res = _deep_search(v, key)
+                    if res is not None:
+                        return res
+        elif isinstance(obj, list):
+            for item in obj:
+                res = _deep_search(item, key)
+                if res is not None:
+                    return res
+        return None
+
     for item in jsons:
         if not isinstance(item, dict):
             continue
 
-        def _num(val, default=0.0):
-            try:
-                return float(val)
-            except (TypeError, ValueError):
-                return default
+        # Helper robusto idêntico ao laudo_precificacao.py
+        def _find_val(keys: list | str, default=0.0):
+            if isinstance(keys, str):
+                keys = [keys]
+            
+            for k in keys:
+                val = item.get(k)
+                
+                # Se não achou no nível superior, tenta recursivo (se item for complexo)
+                # ou se item for o próprio json, tenta na raiz (n8n_json) como fallback?
+                # Aqui vamos focar em achar dentro do 'item' ou 'raiz' se item tiver faltando dados
+                if val is None or val == "":
+                     val = _deep_search(item, k)
+                
+                # Se ainda não achou, tenta na raiz global (caso de dados flat fora do array)
+                if val is None or val == "":
+                     val = _deep_search(n8n_json, k)
 
-        origem = (
-            item.get("origem")
-            or item.get("refinariaNome")
-            or item.get("refinaria_nome")
-            or item.get("refinaria_codigo")
-            or "Origem não informada"
-        )
+                if val is not None and val != "":
+                    # Tenta converter
+                    if isinstance(val, (int, float)):
+                        return float(val)
+                    if isinstance(val, str):
+                        # Limpa R$, espaços, troca vírgula por ponto
+                        clean = val.replace("R$", "").replace(" ", "")
+                        if "," in clean and "." in clean: # 2.000,00 -> 2000.00
+                            clean = clean.replace(".", "").replace(",", ".")
+                        elif "," in clean: # 200,00 -> 200.00
+                            clean = clean.replace(",", ".")
+                        try:
+                            return float(clean)
+                        except ValueError:
+                            pass
+            return default
 
-        destino = (
-            item.get("destino")
-            or item.get("destinoCidade")
-            or ""
-        )
+        def _find_str(keys: list | str, default=""):
+            if isinstance(keys, str): keys = [keys]
+            for k in keys:
+                val = item.get(k) or _deep_search(item, k) or _deep_search(n8n_json, k)
+                if val:
+                    return str(val)
+            return default
 
-        quantidade = item.get("quantidade") or raiz.get("quantidade") or 0
+        # Extração Robusta
+        origem = _find_str(["origem", "Origem", "refinariaNome", "refinaria_nome", "refinaria_codigo", "Refinaria"], "Origem não informada")
+        destino = _find_str(["destino", "Destino", "destinoCidade", "destino_cidade"], "")
+        
+        # Quantidade
+        quantidade = _find_val(["quantidade", "Quantidade", "Qtd"], 0)
 
-        preco_net = (
-            item.get("precoNet")
-            or item.get("preco_net")
-            or 0
-        )
+        # Financeiro
+        preco_net = _find_val(["precoNet", "preco_net", "valor_net", "valor_net_refinaria", "Preço Net"], 0)
+        frete = _find_val(["frete", "vlr_frete_unitario", "valor_frete", "Frete"], 0)
+        
+        # Impostos e Componentes
+        impostos = _find_val(["impostos", "valor_impostos", "Impostos"], 0)
+        difal = _find_val(["difal", "valor_difal", "DIFAL"], 0)
+        cmv = _find_val(["cmv", "CMV", "preco_com_margem", "custo_venda"], 0)
+        margem = _find_val(["margem", "margem_percentual", "Margem", "margemInformada"], 0)
+        
+        preco_final = _find_val(["precoFinal", "preco_final", "preco_final_unitario", "Preço Final"], 0)
 
-        frete = (
-            item.get("frete")
-            or item.get("frete_por_ton")
-            or 0
-        )
+        custo_fixo = _find_val(["custoFixo", "custo_fixo"], 0)
 
-        cmv = (
-            item.get("cmv")
-            or item.get("CMV")
-            or item.get("preco_com_margem")
-            or 0
-        )
+        icms_vlr = _find_val(["vlr_icms", "valor_icms", "icms_valor"], 0)
+        pis_vlr = _find_val(["vlr_pis", "valor_pis", "pis_valor"], 0)
+        cofins_vlr = _find_val(["vlr_cofins", "valor_cofins", "cofins_valor"], 0)
 
-        margem = (
-            item.get("margem")
-            or item.get("margem_percentual")
-            or 0
-        )
+        # Fallback de impostos (soma)
+        if impostos == 0:
+            impostos = icms_vlr + pis_vlr + cofins_vlr + difal
 
-        preco_final = (
-            item.get("precoFinal")
-            or item.get("preco_final")
-            or item.get("preco_final_unitario")
-            or 0
-        )
+        # Recálculo de Preço Final se zerado
+        if preco_final == 0:
+            preco_sem_impostos = _find_val(["precoSemImpostos", "preco_sem_impostos"], 0)
+            if preco_sem_impostos > 0:
+                preco_final = preco_sem_impostos + impostos
+            elif preco_net > 0:
+                 # Tentativa extrema: net + impostos + custo fixo + margem?
+                 # Melhor deixar 0 se não tiver dados suficientes para não inventar
+                 pass
+        
+        valor_total = _find_val(["valorTotal", "valor_total", "Valor Total"], 0)
+        if valor_total == 0 and preco_final > 0 and quantidade > 0:
+            valor_total = preco_final * quantidade
 
-        valor_total = (
-            item.get("valorTotal")
-            or item.get("valor_total")
-            or 0
-        )
+        distancia = _find_val(["distanciaKm", "distancia_km", "Distância"], 0)
 
         resultado = {
             "origem": origem,
             "destino": destino,
             "quantidade": quantidade,
-            "precoNet": _num(preco_net),
-            "frete": _num(frete),
-            "impostos": _num(item.get("impostos")),
-            "difal": _num(item.get("difal")),
-            "cmv": _num(cmv),
-            "margem": _num(margem),
-            "precoFinal": _num(preco_final),
-            "produto": item.get("produto") or raiz.get("produto") or "",
-            "destinoCidade": item.get("destinoCidade") or raiz.get("destinoCidade") or "",
-            "destinoUF": item.get("destinoUF") or raiz.get("destinoUF") or "",
-            "refinariaNome": item.get("refinariaNome") or item.get("refinaria_nome") or "",
+            "precoNet": preco_net,
+            "frete": frete,
+            "impostos": impostos,
+            "difal": difal,
+            "cmv": cmv,
+            "margem": margem,
+            "precoFinal": preco_final,
+            "produto": _find_str(["produto", "Produto"], ""),
+            "destinoCidade": _find_str(["destinoCidade", "destino_cidade"], ""),
+            "destinoUF": _find_str(["destinoUF", "destino_uf"], ""),
+            "refinariaNome":_find_str(["refinariaNome", "refinaria_nome", "Refinaria"], ""),
             "filialRecomendada": item.get("filialRecomendada") or "",
-            "distanciaKm": _num(item.get("distanciaKm")),
-            "custoFixo": _num(item.get("custoFixo") or item.get("custo_fixo")),
-            "valorTotal": _num(valor_total),
+            "distanciaKm": distancia,
+            "custoFixo": custo_fixo,
+            "valorTotal": valor_total,
         }
 
         # 👇 Aqui o laudo entra na resposta que o front enxerga
