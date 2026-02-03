@@ -399,8 +399,9 @@ export function init() {
       destinoCidadeInput.placeholder = "Carregando cidades...";
 
       try {
+        // Usa o proxy local para evitar problemas de CORS/HTTPS misto e garantir estabilidade
         const response = await fetch(
-          `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${uf}/municipios`,
+          `/api/cidades/${uf}`,
         );
         if (!response.ok) {
           throw new Error("Não foi possível carregar as cidades.");
@@ -593,7 +594,7 @@ export function init() {
 
       linhas.push(
         `Opção ${idx + 1}: Origem ${origem}, Destino ${destino}, ` +
-          `Qtd ${qtd} ton, Frete ${frete}, Margem ${margem}, Preço Final ${precoFinal}.`,
+        `Qtd ${qtd} ton, Frete ${frete}, Margem ${margem}, Preço Final ${precoFinal}.`,
       );
     });
 

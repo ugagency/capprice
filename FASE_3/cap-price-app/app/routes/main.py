@@ -527,3 +527,40 @@ def api_chat():
         return jsonify({
             "reply": f"Ocorreu um erro interno: {str(e)}"
         }), 500
+
+
+# ============================================================
+# API Auxiliares (Proxy)
+# ============================================================
+@main_bp.route("/api/cidades/<uf>", methods=["GET"])
+@login_required
+def api_cidades(uf):
+    """
+    Proxy para buscar cidades.
+    Alterado para usar BrasilAPI (mais estável e sem bloqueios WAF chatos do IBGE).
+    """
+    # Validação simples
+    if not uf:
+        return jsonify({"error": "UF vazia"}), 400
+    
+    # Limpeza (apenas 2 chars)
+    uf_clean = uf.strip().upper()[:2]
+    
+    try:
+        # Usando BrasilAPI (wrapper mais amigável)
+        url = f"https://brasilapi.com.br/api/ibge/municipios/v1/{uf_clean}"
+        
+        # BrasilAPI geralmente é rápido e não bloqueia requests simples
+        resp = requests.get(url, timeout=10)
+        
+        if not resp.ok:
+            print(f"[API CIDADES] Erro BrasilAPI: {resp.status_code}")
+            return jsonify([]), resp.status_code
+        
+        data = resp.json()
+        # O formato é compatível: lista de dicts com chave "nome"
+        return jsonify(data)
+
+    except Exception as e:
+        print(f"[API CIDADES] Exceção ao buscar cidades: {e}")
+        return jsonify({"error": str(e)}), 500
