@@ -167,10 +167,10 @@ def _montar_contexto_laudo(
     dados_raiz = raiz.get("dados", {}) if isinstance(raiz, dict) else {}
     
     laudo_texto = (
-        cenario.get("laudo") 
-        or cenario.get("diagnostico")
-        or dados_raiz.get("laudo")
+        cenario.get("diagnostico")
+        or cenario.get("laudo")
         or dados_raiz.get("diagnostico")
+        or dados_raiz.get("laudo")
         or dados_raiz.get("texto")
         or ""
     )
@@ -327,7 +327,7 @@ def _montar_contexto_laudo(
 
         alternativos_detalhados.append({
             "opcao_label": f"Opção {idx}",
-            "laudo_texto": alt.get("laudo") or "",
+            "laudo_texto": alt.get("diagnostico") or alt.get("laudo") or "",
             "motivo": alt.get("motivo") or "",
             "quantidade": alt_quantidade,
             "preco_final": _fmt_moeda(alt_preco_final),
@@ -355,32 +355,10 @@ def _montar_contexto_laudo(
     status_simulacao = cenario.get("status") or raiz.get("status") or "Concluído"
 
     # Extração de Diagnóstico (Prioriza texto simples conforme solicitado)
-    diag_raw = cenario.get("diagnostico") or raiz.get("diagnostico")
+    # Se laudo_texto já é o diagnóstico, usamos ele para evitar redundância
+    diagnostico_texto = laudo_texto if (cenario.get("diagnostico") or not laudo_texto) else (cenario.get("diagnostico") or laudo_texto)
     
-    # Se ainda tentar vir como JSON string ou objeto, mantemos compatibilidade, 
-    # mas o foco é suportar o texto direto.
-    diagnostico_texto = ""
-    
-    if isinstance(diag_raw, str):
-        # Tenta ver se é JSON apenas se parecer JSON
-        if diag_raw.strip().startswith("{"):
-            try:
-                import json
-                parsed = json.loads(diag_raw)
-                # Se for dict, tenta extrair um resumo ou texto principal
-                if isinstance(parsed, dict):
-                    diagnostico_texto = parsed.get("resumo") or parsed.get("texto") or str(parsed)
-                else:
-                    diagnostico_texto = str(parsed)
-            except:
-                diagnostico_texto = diag_raw
-        else:
-            diagnostico_texto = diag_raw
-    elif isinstance(diag_raw, dict):
-         diagnostico_texto = diag_raw.get("resumo") or str(diag_raw)
-    
-    # Mantemos a variável 'diagnostico' como dict para compatibilidade se necessário,
-    # mas criamos 'diagnostico_texto' para uso direto no template.
+    # Mantemos o objeto diagnostico para compatibilidade se necessário
     diagnostico = {"resumo": diagnostico_texto}
     if not diagnostico.get("resumo") and not any(diagnostico.values()):
         # Se tudo falhou, tenta usar campos soltos

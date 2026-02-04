@@ -17,6 +17,7 @@ export function init() {
   const destinoCidadeInput = document.getElementById("destino_cidade");
   const cidadesDatalist = document.getElementById("cidades-list");
   const precoNetInput = document.getElementById("preco_net");
+  const margemInput = document.getElementById("margem");
   const refinariaSelect = document.getElementById("refinaria");
 
   const resultadoSection = document.getElementById("resultado-section");
@@ -436,7 +437,9 @@ export function init() {
     if (destinoCidadeInput)
       destinoCidadeInput.classList.remove("border-red-500");
     if (emailParaEnvio) emailParaEnvio.classList.remove("border-red-500");
+    if (emailParaEnvio) emailParaEnvio.classList.remove("border-red-500");
     if (precoNetInput) precoNetInput.classList.remove("border-red-500");
+    if (margemInput) margemInput.classList.remove("border-red-500");
     if (refinariaSelect) refinariaSelect.classList.remove("border-red-500");
   }
 
@@ -463,6 +466,13 @@ export function init() {
         alert("Ao informar o Preço Net, é obrigatório selecionar uma Refinaria específica.");
         return;
       }
+    }
+
+    // Regra: Margem é obrigatória
+    if (!margemInput || !margemInput.value) {
+      margemInput.classList.add("border-red-500");
+      alert("Por favor, informe a Margem %.");
+      return;
     }
 
     showLoading();

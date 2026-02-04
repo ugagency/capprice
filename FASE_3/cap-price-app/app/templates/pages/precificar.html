@@ -73,8 +73,7 @@ data-page="precificar"
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 h-full items-stretch">
 
                 <!-- COLUNA 1: Formulário / Resultado -->
-                <div
-                    class="lg:col-span-1 bg-white rounded-2xl shadow-lg p-4 flex flex-col h-full">
+                <div class="lg:col-span-1 bg-white rounded-2xl shadow-lg p-4 flex flex-col h-full">
                     <h2 class="text-xl font-bold text-gray-800 mb-4 text-center">Precificador</h2>
 
                     <!-- Container do conteúdo para ocupar o restante do card -->
@@ -87,7 +86,8 @@ data-page="precificar"
                             <div id="simulacao-fields" class="space-y-4">
                                 <div class="flex items-center space-x-3">
                                     <label for="destino_uf"
-                                        class="w-1/3 block text-sm font-medium text-gray-700 text-right">Destino (UF)</label>
+                                        class="w-1/3 block text-sm font-medium text-gray-700 text-right">Destino
+                                        (UF)</label>
                                     <select id="destino_uf" name="destino_uf"
                                         class="flex-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 sm:text-sm">
                                         <option value="" disabled selected>Selecione a UF</option>
@@ -156,7 +156,8 @@ data-page="precificar"
 
                                 <div class="flex items-center space-x-3">
                                     <label for="quantidade"
-                                        class="w-1/3 block text-sm font-medium text-gray-700 text-right">Qtd (ton)</label>
+                                        class="w-1/3 block text-sm font-medium text-gray-700 text-right">Qtd
+                                        (ton)</label>
                                     <input type="number" name="quantidade" id="quantidade" value="27"
                                         class="flex-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 sm:text-sm px-3">
                                 </div>
@@ -164,15 +165,19 @@ data-page="precificar"
                                 <!-- Campo Margem (%) abaixo de Qtd (ton) -->
                                 <div class="flex items-center space-x-3">
                                     <label for="margem"
-                                        class="w-1/3 block text-sm font-medium text-gray-700 text-right">Margem (%)</label>
-                                    <input type="number" name="margem" id="margem" step="0.01" placeholder="Opcional (ex: 5)"
+                                        class="w-1/3 block text-sm font-medium text-gray-700 text-right">Margem (%)
+                                        <span class="text-red-500">*</span></label>
+                                    <input type="number" name="margem" id="margem" step="0.01" placeholder="Ex: 5"
+                                        required
                                         class="flex-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 sm:text-sm px-3">
                                 </div>
 
                                 <div class="flex items-center space-x-3">
                                     <label for="preco_net"
-                                        class="w-1/3 block text-sm font-medium text-gray-700 text-right">Preço Net (R$)</label>
-                                    <input type="number" name="preco_net" id="preco_net" placeholder="Opcional (ex: 3800)"
+                                        class="w-1/3 block text-sm font-medium text-gray-700 text-right">Preço Net
+                                        (R$)</label>
+                                    <input type="number" name="preco_net" id="preco_net"
+                                        placeholder="Opcional (ex: 3800)"
                                         class="flex-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 sm:text-sm px-3">
                                 </div>
 
@@ -202,8 +207,8 @@ data-page="precificar"
 
                         <!-- LOADING -->
                         <div id="loading-section" class="hidden flex-1 flex flex-col items-center justify-center py-10">
-                            <svg class="animate-spin h-10 w-10 text-teal-600" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                viewBox="0 0 24 24">
+                            <svg class="animate-spin h-10 w-10 text-teal-600" xmlns="http://www.w3.org/2000/svg"
+                                fill="none" viewBox="0 0 24 24">
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
                                     stroke-width="4"></circle>
                                 <path class="opacity-75" fill="currentColor"
@@ -288,8 +293,7 @@ data-page="precificar"
                 </div>
 
                 <!-- COLUNA 2: Chat -->
-                <div
-                    class="lg:col-span-1 bg-white rounded-2xl shadow-lg p-4 flex flex-col h-full">
+                <div class="lg:col-span-1 bg-white rounded-2xl shadow-lg p-4 flex flex-col h-full">
                     <!-- Cabeçalho + chat ocupam flex-1 -->
                     <div class="flex-1 flex flex-col">
                         <div class="flex items-center mb-3 space-x-3">
@@ -430,8 +434,8 @@ data-page="precificar"
                                     <button type="button" id="modal-laudo-close"
                                         class="text-gray-500 hover:text-gray-700 focus:outline-none">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24"
-                                            fill="none" stroke="currentColor" stroke-width="2"
-                                            stroke-linecap="round" stroke-linejoin="round">
+                                            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round">
                                             <line x1="18" y1="6" x2="6" y2="18"></line>
                                             <line x1="6" y1="6" x2="18" y2="18"></line>
                                         </svg>
@@ -452,8 +456,8 @@ data-page="precificar"
 {% endblock %}
 
 {% block scripts %}
-    <!-- Lib para gerar PDF no front-end a partir de HTML -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
-            integrity="sha512-YcsIP0jBqXc9E+u6KDAdAm8YGtS+wGGyRyvE4s46HoPazTA/gkGEXLMaLLfi5yRvCNr4CebIWGAaHo9dZm4V2g=="
-            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!-- Lib para gerar PDF no front-end a partir de HTML -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
+    integrity="sha512-YcsIP0jBqXc9E+u6KDAdAm8YGtS+wGGyRyvE4s46HoPazTA/gkGEXLMaLLfi5yRvCNr4CebIWGAaHo9dZm4V2g=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 {% endblock %}
