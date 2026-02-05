@@ -180,16 +180,27 @@ def _montar_contexto_laudo(
                 return val.get("texto") or val.get("resumo") or val.get("descricao") or str(val)
         return None
 
-    # Prioridade de campos para o parecer/diagnóstico
-    text_keys = ["diagnostico", "laudo", "texto", "parecer", "motivo"]
+    # Prioridade absoluta para o campo 'diagnostico' em qualquer nível
+    # (Evita que o 'motivo' do cenário ganhe do 'diagnostico' da raiz)
+    laudo_texto = (
+        _extract_text(cenario, ["diagnostico"])
+        or _extract_text(dados_raiz, ["diagnostico"])
+        or _extract_text(raiz, ["diagnostico"])
+    )
     
-    laudo_texto = _extract_text(cenario, text_keys)
+    # Se não achou 'diagnostico', tenta os demais campos
     if not laudo_texto:
-        laudo_texto = _extract_text(dados_raiz, text_keys)
-    if not laudo_texto:
-        laudo_texto = _extract_text(raiz, text_keys)
+        text_keys_fallback = ["laudo", "texto", "parecer", "resumo", "motivo"]
+        laudo_texto = (
+            _extract_text(cenario, text_keys_fallback)
+            or _extract_text(dados_raiz, text_keys_fallback)
+            or _extract_text(raiz, text_keys_fallback)
+        )
     
     laudo_texto = laudo_texto or ""
+    
+    # Campo diagnóstico específico para exibição garantida no template
+    diagnostico_texto = laudo_texto
     
     motivo = (
         cenario.get("motivo")
@@ -341,9 +352,13 @@ def _montar_contexto_laudo(
         alt_origem_cidade, alt_origem_uf = _split_cidade_uf(alt_origem_str)
         alt_destino_cidade, alt_destino_uf = _split_cidade_uf(alt_destino_str)
 
+        alt_laudo = _extract_text(alt, ["diagnostico"])
+        if not alt_laudo:
+             alt_laudo = _extract_text(alt, ["laudo", "texto", "parecer", "resumo", "motivo"])
+
         alternativos_detalhados.append({
             "opcao_label": f"Opção {idx}",
-            "laudo_texto": _extract_text(alt, text_keys) or "",
+            "laudo_texto": alt_laudo or "",
             "motivo": alt.get("motivo") or "",
             "quantidade": alt_quantidade,
             "preco_final": _fmt_moeda(alt_preco_final),
@@ -370,10 +385,6 @@ def _montar_contexto_laudo(
     # Extração de Status
     status_simulacao = cenario.get("status") or raiz.get("status") or "Concluído"
 
-    # Extração de Diagnóstico (Prioriza texto simples conforme solicitado)
-    # Se laudo_texto já é o diagnóstico, usamos ele para evitar redundância
-    diagnostico_texto = laudo_texto if (cenario.get("diagnostico") or not laudo_texto) else (cenario.get("diagnostico") or laudo_texto)
-    
     # Mantemos o objeto diagnostico para compatibilidade se necessário
     diagnostico = {"resumo": diagnostico_texto}
     if not diagnostico.get("resumo") and not any(diagnostico.values()):

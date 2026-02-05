@@ -309,6 +309,23 @@
         }
 
         @media print {
+            .diagnostic-box {
+                page-break-inside: auto !important;
+                break-inside: auto !important;
+            }
+
+            /* força o texto a continuar na próxima página */
+            .diagnostic-box p {
+                page-break-inside: auto !important;
+                break-inside: auto !important;
+            }
+
+            /* evita que cards "segurem" conteúdo */
+            .card {
+                page-break-inside: auto !important;
+                break-inside: auto !important;
+            }
+
             .print-btn {
                 display: none;
             }
@@ -321,6 +338,79 @@
             .container {
                 box-shadow: none;
                 border-radius: 0;
+            }
+        }
+
+        /* ===== FIX DEFINITIVO TEXTO LONGO ===== */
+        .diagnostic-box,
+        .diagnostic-box * {
+            height: auto !important;
+            max-height: none !important;
+            overflow: visible !important;
+        }
+
+        /* texto pode quebrar em qualquer lugar */
+        .diagnostic-box p {
+            white-space: pre-wrap !important;
+            word-break: break-word !important;
+            overflow-wrap: anywhere !important;
+        }
+
+        /* evita corte em grid / flex */
+        .sequential-layout,
+        .card,
+        .content {
+            overflow: visible !important;
+        }
+
+        .laudo-texto {
+            white-space: pre-wrap;
+            word-break: break-word;
+            overflow-wrap: anywhere;
+            line-height: 1.6;
+            font-size: 13px;
+        }
+
+        @media print {
+
+            /* explode qualquer grid ou flex */
+            .sequential-layout,
+            .content,
+            .cards,
+            .card {
+                display: block !important;
+            }
+
+            /* card vira apenas um container normal */
+            .card {
+                border: none !important;
+                box-shadow: none !important;
+                padding: 0 !important;
+                margin-bottom: 16px !important;
+            }
+
+            /* área do laudo */
+            .diagnostic-box {
+                display: block !important;
+                page-break-inside: auto !important;
+                break-inside: auto !important;
+            }
+
+            /* TEXTO é livre para quebrar */
+            .diagnostic-box,
+            .diagnostic-box * {
+                overflow: visible !important;
+                max-height: none !important;
+                height: auto !important;
+            }
+
+            .diagnostic-box p,
+            .diagnostic-box div {
+                white-space: pre-wrap !important;
+                word-break: break-word !important;
+                overflow-wrap: anywhere !important;
+                page-break-inside: auto !important;
+                break-inside: auto !important;
             }
         }
     </style>
@@ -388,22 +478,19 @@
 
                 <!-- Análise da Opção Vencedora (Fora do card financeiro para largura total) -->
                 {% if laudo_texto %}
-                <div class="card diagnostic-box" style="margin-top: 15px; margin-bottom: 20px; padding: 20px;">
-                    <div style="font-size: 14px; color: #111; line-height: 1.6;">
-                        <p style="margin: 0; font-weight: 700; color: var(--secondary-color);">
-                            Análise baseada na planilha:
-                        </p>
-                        <hr style="border: 0; border-top: 1px solid #eee; margin: 10px 0;">
-                        <p style="
-                            white-space: pre-wrap;
-                            word-break: break-word;
-                            overflow-wrap: break-word;
-                            margin-top: 8px;
-                        ">
-                            {{ laudo_texto }}
-                        </p>
+                <!-- Cabeçalho visual (card curto) -->
+                <div class="card" style="margin-top: 15px;">
+                    <div class="card-header">
+                        <span class="icon">🧠</span>
+                        <span>Análise baseada na planilha</span>
                     </div>
                 </div>
+
+                <!-- TEXTO LONGO FORA DO CARD -->
+                <div class="diagnostic-box laudo-texto">
+                    {{ laudo_texto }}
+                </div>
+
                 {% endif %}
 
                 <!-- Card Logístico -->
@@ -874,22 +961,19 @@
 
                 <!-- Análise da Alternativa (Fora do grid para largura total) -->
                 {% if alt.laudo_texto %}
-                <div class="card diagnostic-box" style="margin-top: 10px; margin-bottom: 15px; padding: 15px;">
-                    <div style="font-size: 14px; color: #111; line-height: 1.5;">
-                        <p style="margin: 0; font-weight: 700; color: var(--secondary-color);">
-                            Análise baseada na planilha:
-                        </p>
-                        <hr style="border: 0; border-top: 1px solid #eee; margin: 8px 0;">
-                        <p style="
-                            white-space: pre-wrap;
-                            word-break: break-word;
-                            overflow-wrap: break-word;
-                            margin-top: 6px;
-                        ">
-                            {{ alt.laudo_texto }}
-                        </p>
+                <!-- Cabeçalho visual (card curto) -->
+                <div class="card" style="margin-top: 15px;">
+                    <div class="card-header">
+                        <span class="icon">🧠</span>
+                        <span>Análise baseada na planilha</span>
                     </div>
                 </div>
+
+                <!-- TEXTO LONGO FORA DO CARD -->
+                <div class="diagnostic-box laudo-texto">
+                    {{ alt.laudo_texto }}
+                </div>
+
                 {% endif %}
 
                 <!-- Bloco logístico -->
