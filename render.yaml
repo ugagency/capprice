@@ -67,6 +67,8 @@ services:
         value: 1MK4774Frmmd0nyw44CNNwWMwggEOdTDvEnFGVTX
       - key: SSO_ISSUER
         value: capssys.local
+      - key: SSO_AUDIENCE
+        value: capprice
 
   # -----------------------------------------------------------
   # 3) CapTransportation (Painel Logístico)
@@ -103,6 +105,8 @@ services:
         value: 1MK4774Frmmd0nyw44CNNwWMwggEOdTDvEnFGVTX
       - key: SSO_ISSUER
         value: capssys.local
+      - key: SSO_AUDIENCE
+        value: captransportation
 
 databases:
   - name: saas-db
