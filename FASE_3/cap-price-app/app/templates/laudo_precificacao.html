@@ -296,10 +296,14 @@
             border-left: 5px solid var(--secondary-color);
             background: #fdfdfd;
             width: 100%;
-            height: auto;
-            min-height: none;
-            overflow: visible;
-            break-inside: auto;
+            height: auto !important;
+            overflow: visible !important;
+            display: block !important;
+            page-break-inside: auto;
+        }
+
+        .diagnostic-box p {
+            white-space: pre-wrap;
             word-wrap: break-word;
             overflow-wrap: break-word;
         }
@@ -939,7 +943,6 @@
     <div class="footer">
         Gerado automaticamente pela plataforma CAP Price.
         Data de referência: {{ data_referencia or '—' }}.
-    </div>
     </div>
 
 </body>

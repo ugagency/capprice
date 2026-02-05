@@ -467,6 +467,13 @@ def gerar_laudo_para_resposta_simulacao(n8n_json: Any) -> Any:
             return n8n_json
 
         contexto = _montar_contexto_laudo(principal, alternativos, raiz)
+
+        # DEBUG: Verificar se o texto está chegando completo
+        print(f"[LAUDO] Gerando HTML. Texto principal length: {len(contexto.get('laudo_texto', ''))}")
+        alts = contexto.get('alternativos_detalhados', [])
+        for idx, alt in enumerate(alts):
+             print(f"[LAUDO] Alt {idx+2} Texto length: {len(alt.get('laudo_texto', ''))}")
+
         laudo_html = render_template("laudo_precificacao.html", **contexto)
 
         # Define onde guardar o HTML gerado
