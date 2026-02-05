@@ -297,7 +297,11 @@
             background: #fdfdfd;
             width: 100%;
             height: auto;
-            min-height: fit-content;
+            min-height: none;
+            overflow: visible;
+            break-inside: auto;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
         }
 
         @media print {
@@ -380,9 +384,11 @@
 
                 <!-- Análise da Opção Vencedora (Fora do card financeiro para largura total) -->
                 {% if laudo_texto %}
-                <div class="card diagnostic-box" style="margin-top: 12px; margin-bottom: 12px;">
-                    <div style="padding: 15px 18px; font-size: 14px; color: #111; line-height: 1.6;">
-                        <p style="white-space: pre-wrap; margin: 0;"><strong>Análise baseada na planilha:</strong></p>
+                <div class="card diagnostic-box" style="margin-top: 15px; margin-bottom: 20px; padding: 20px;">
+                    <div style="font-size: 14px; color: #111; line-height: 1.6;">
+                        <p style="white-space: pre-wrap; margin: 0; font-weight: 700; color: var(--secondary-color);">
+                            Análise baseada na planilha:</p>
+                        <hr style="border: 0; border-top: 1px solid #eee; margin: 10px 0;">
                         <p style="white-space: pre-wrap; margin-top: 8px;">{{ laudo_texto }}</p>
                     </div>
                 </div>
@@ -856,9 +862,11 @@
 
                 <!-- Análise da Alternativa (Fora do grid para largura total) -->
                 {% if alt.laudo_texto %}
-                <div class="card diagnostic-box" style="margin-top: 8px; margin-bottom: 12px;">
-                    <div style="padding: 12px 15px; font-size: 13px; color: #111; line-height: 1.5;">
-                        <p style="white-space: pre-wrap; margin: 0;"><strong>Análise baseada na planilha:</strong></p>
+                <div class="card diagnostic-box" style="margin-top: 10px; margin-bottom: 15px; padding: 15px;">
+                    <div style="font-size: 14px; color: #111; line-height: 1.5;">
+                        <p style="white-space: pre-wrap; margin: 0; font-weight: 700; color: var(--secondary-color);">
+                            Análise baseada na planilha:</p>
+                        <hr style="border: 0; border-top: 1px solid #eee; margin: 8px 0;">
                         <p style="white-space: pre-wrap; margin-top: 6px;">{{ alt.laudo_texto }}</p>
                     </div>
                 </div>
