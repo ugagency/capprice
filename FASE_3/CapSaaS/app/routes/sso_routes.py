@@ -33,8 +33,9 @@ def _decode_and_validate_bearer(token: str) -> dict:
     Valida o JWT emitido pelo CAPSSYS usando tb_sso_config + audience do client.
     """
     config, clients = _load_sso_from_db(current_app)
-
     unverified = jwt.decode(token, options={"verify_signature": False})
+    print("AUD RECEBIDO:", unverified.get("aud"))
+
     aud = unverified.get("aud")
 
     payload = jwt.decode(
