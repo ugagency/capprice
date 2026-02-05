@@ -166,14 +166,30 @@ def _montar_contexto_laudo(
     # Tenta achar no cenario, ou no objeto 'dados' da raiz (conforme relato do usuário)
     dados_raiz = raiz.get("dados", {}) if isinstance(raiz, dict) else {}
     
-    laudo_texto = (
-        cenario.get("diagnostico")
-        or cenario.get("laudo")
-        or dados_raiz.get("diagnostico")
-        or dados_raiz.get("laudo")
-        or dados_raiz.get("texto")
-        or ""
-    )
+    def _extract_text(obj, keys):
+        for k in keys:
+            val = obj.get(k)
+            if not val:
+                continue
+            if isinstance(val, str):
+                return val
+            if isinstance(val, list):
+                return "\n".join(str(v) for v in val)
+            if isinstance(val, dict):
+                # Tenta campos comuns de texto dentro do dicionário
+                return val.get("texto") or val.get("resumo") or val.get("descricao") or str(val)
+        return None
+
+    # Prioridade de campos para o parecer/diagnóstico
+    text_keys = ["diagnostico", "laudo", "texto", "parecer", "motivo"]
+    
+    laudo_texto = _extract_text(cenario, text_keys)
+    if not laudo_texto:
+        laudo_texto = _extract_text(dados_raiz, text_keys)
+    if not laudo_texto:
+        laudo_texto = _extract_text(raiz, text_keys)
+    
+    laudo_texto = laudo_texto or ""
     
     motivo = (
         cenario.get("motivo")
@@ -327,7 +343,7 @@ def _montar_contexto_laudo(
 
         alternativos_detalhados.append({
             "opcao_label": f"Opção {idx}",
-            "laudo_texto": alt.get("diagnostico") or alt.get("laudo") or "",
+            "laudo_texto": _extract_text(alt, text_keys) or "",
             "motivo": alt.get("motivo") or "",
             "quantidade": alt_quantidade,
             "preco_final": _fmt_moeda(alt_preco_final),
