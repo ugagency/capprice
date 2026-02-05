@@ -49,23 +49,56 @@ services:
           name: saas-db
           property: connectionString
       
-      # SSO Config (Internal URL to talk to Portal)
       - key: CAPSSYS_INTERNAL_BASE_URL
-        value: http://saas-portal:5000
+        value: http://saas-portal:10000
       
-      # Public URL for browser redirects
-      # You need to copy the saas-portal public URL here manually in Dashboard
       - key: CAPSSYS_PUBLIC_URL
         sync: false 
 
       - key: SSO_CLIENT_ID
         value: capprice
       - key: SSO_CLIENT_SECRET
-        value: CapPrice2026  # Make sure this matches what's in DB
+        value: CapPrice@2026!A1
       - key: SSO_JWT_SECRET
-        value: sso_jwt_secret_change_me
+        value: 1MK4774Frmmd0nyw44CNNwWMwggEOdTDvEnFGVTX
       - key: SSO_ISSUER
-        value: capssys.local  # Or the public URL
+        value: capssys.local
+
+  # -----------------------------------------------------------
+  # 3) CapTransportation (Painel Logístico)
+  # -----------------------------------------------------------
+  - type: web
+    name: cap-transportation-app
+    runtime: docker
+    repo: https://github.com/ugagency/capprice
+    branch: main
+    rootDir: FASE_3/CapTransportation
+    plan: free
+    region: oregon
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: saas-db
+          property: connectionString
+      
+      - key: CAPSSYS_INTERNAL_BASE_URL
+        value: http://saas-portal:10000
+      
+      - key: CAPSSYS_PUBLIC_URL
+        sync: false 
+
+      - key: SSO_CLIENT_ID
+        value: captransportation
+      - key: SSO_CLIENT_SECRET
+        value: CapTransp@2026!A1
+      - key: SSO_JWT_SECRET
+        value: 1MK4774Frmmd0nyw44CNNwWMwggEOdTDvEnFGVTX
+      - key: SSO_ISSUER
+        value: capssys.local
 
 databases:
   - name: saas-db

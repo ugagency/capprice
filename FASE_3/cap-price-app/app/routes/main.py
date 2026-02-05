@@ -302,19 +302,25 @@ def sso_callback():
     state = (request.args.get("state") or "").strip()  # opcional, mas mantido
 
     if not code:
+        print("[SSO CALLBACK] Falha: code ausente na URL.")
         return "SSO inválido: code ausente", 400
 
+    print(f"[SSO CALLBACK] Iniciando troca: code={code[:6]}... para client={SSO_CLIENT_ID}")
+
     if not CAPSSYS_INTERNAL_BASE_URL:
+        print("[SSO CALLBACK] Falha: CAPSSYS_INTERNAL_BASE_URL não configurada.")
         return "SSO inválido: CAPSSYS_INTERNAL_BASE_URL não configurada", 500
 
     try:
+        exchange_url = f"{CAPSSYS_INTERNAL_BASE_URL}/api/sso/exchange"
+        print(f"[SSO CALLBACK] POST {exchange_url}")
         r = requests.post(
-            f"{CAPSSYS_INTERNAL_BASE_URL}/api/sso/exchange",
+            exchange_url,
             json={
                 "code": code,
                 "client_id": SSO_CLIENT_ID,
                 "client_secret": SSO_CLIENT_SECRET,
-                "state": state,  # se o CAPSSYS ignorar, ok
+                "state": state,
             },
             timeout=10,
         )

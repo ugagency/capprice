@@ -294,9 +294,10 @@ VALUES
 ON CONFLICT (client_id) DO UPDATE SET client_secret_hash = EXCLUDED.client_secret_hash;
 
 -- Redirects
+-- IMPORTANT: Update these URLs in the Render Postgres dashboard to match your actual app URLs
 INSERT INTO tb_sso_client_redirect (client_id, redirect_url, enabled) VALUES
-  ('capprice', 'http://localhost:5023/sso/callback', true),
-  ('captransportation', 'http://localhost:5024/sso/callback', true)
+  ('capprice', 'https://cap-price-app.onrender.com/sso/callback', true),
+  ('captransportation', 'https://cap-transportation-app.onrender.com/sso/callback', true)
 ON CONFLICT DO NOTHING;
 
 -- App Modules (CapTransportation)
