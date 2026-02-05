@@ -19,11 +19,15 @@ services:
         fromDatabase:
           name: saas-db
           property: connectionString
-      # Public URL will be filled by Render automatically, 
-      # but apps need to know it for redirects.
-      # You must add CAPSSYS_PUBLIC_URL manually in dashboard or use RENDER_EXTERNAL_URL
+      # Portas internas no Render: 10000 (padrão)
       - key: CAPSSYS_PUBLIC_URL
-        sync: false  # Placeholder, user will edit in dashboard
+        sync: false 
+
+      # Redirecionamento SSO (serão injetados no banco pelo update_redirects.py)
+      - key: REDIRECT_URL_CAPPRICE
+        value: https://cap-price-app.onrender.com/sso/callback
+      - key: REDIRECT_URL_CAPTRANSPORTATION
+        value: https://cap-transportation-app.onrender.com/sso/callback
 
   # -----------------------------------------------------------
   # 2) CapPrice (Precificador)
