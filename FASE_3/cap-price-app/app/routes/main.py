@@ -18,7 +18,7 @@ main_bp = Blueprint("main", __name__)
 # ============================================================
 N8N_SIMULATOR_WEBHOOK_URL = os.getenv(
     "N8N_SIMULATOR_WEBHOOK_URL",
-    "https://automacoes-n8n.infrassys.com/webhook-test/CPV5x",
+    "https://automacoes-n8n.infrassys.com/webhook/CPV5x",
 )
 
 N8N_CHAT_WEBHOOK_URL = os.getenv(
