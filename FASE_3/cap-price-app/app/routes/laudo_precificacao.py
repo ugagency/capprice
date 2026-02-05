@@ -180,21 +180,22 @@ def _montar_contexto_laudo(
                 return val.get("texto") or val.get("resumo") or val.get("descricao") or str(val)
         return None
 
-    # Prioridade absoluta para o campo 'diagnostico' em qualquer nível
-    # (Evita que o 'motivo' do cenário ganhe do 'diagnostico' da raiz)
+    # Prioridade absoluta para o campo 'diagnostico'
+    # Para o laudo principal, preferimos o diagnóstico GLOBAL (raiz ou dados)
+    # se ele existir, pois costuma ser o mais completo.
     laudo_texto = (
-        _extract_text(cenario, ["diagnostico"])
+        _extract_text(raiz, ["diagnostico"])
         or _extract_text(dados_raiz, ["diagnostico"])
-        or _extract_text(raiz, ["diagnostico"])
+        or _extract_text(cenario, ["diagnostico"])
     )
     
-    # Se não achou 'diagnostico', tenta os demais campos
+    # Se não achou 'diagnostico', tenta os demais campos de fallback
     if not laudo_texto:
         text_keys_fallback = ["laudo", "texto", "parecer", "resumo", "motivo"]
         laudo_texto = (
-            _extract_text(cenario, text_keys_fallback)
+            _extract_text(raiz, text_keys_fallback)
             or _extract_text(dados_raiz, text_keys_fallback)
-            or _extract_text(raiz, text_keys_fallback)
+            or _extract_text(cenario, text_keys_fallback)
         )
     
     laudo_texto = laudo_texto or ""
