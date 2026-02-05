@@ -80,13 +80,16 @@ def sso_callback():
         return "SSO not configured (CAPSSYS_INTERNAL_BASE_URL/SSO_CLIENT_ID/SSO_CLIENT_SECRET)", 500
 
     # Exchange
-    r = requests.post(
-        f"{capssys}/api/sso/exchange",
-        json={"code": code, "client_id": client_id, "client_secret": client_secret},
-        timeout=12,
-    )
-    if r.status_code != 200:
-        return f"SSO exchange failed: {r.status_code} - {r.text}", 401
+    try:
+        r = requests.post(
+            f"{capssys}/api/sso/exchange",
+            json={"code": code, "client_id": client_id, "client_secret": client_secret},
+            timeout=12,
+        )
+        if r.status_code != 200:
+            return f"SSO exchange failed: {r.status_code} - {r.text}", 401
+    except Exception as e:
+        return f"Falha de conexão no SSO exchange (CapTransportation): {str(e)}", 502
 
     data = r.json()
     token = data.get("access_token")

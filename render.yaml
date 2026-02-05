@@ -54,10 +54,10 @@ services:
           property: connectionString
       
       - key: CAPSSYS_INTERNAL_BASE_URL
-        value: http://saas-portal:10000
+        value: https://saas-portal-g3yu.onrender.com
       
       - key: CAPSSYS_PUBLIC_URL
-        sync: false 
+        value: https://saas-portal-g3yu.onrender.com
 
       - key: SSO_CLIENT_ID
         value: capprice
@@ -92,10 +92,10 @@ services:
           property: connectionString
       
       - key: CAPSSYS_INTERNAL_BASE_URL
-        value: http://saas-portal:10000
+        value: https://saas-portal-g3yu.onrender.com
       
       - key: CAPSSYS_PUBLIC_URL
-        sync: false 
+        value: https://saas-portal-g3yu.onrender.com
 
       - key: SSO_CLIENT_ID
         value: captransportation
